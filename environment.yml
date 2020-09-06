@@ -1,0 +1,14 @@
+name: nene
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7
+  - pip
+  - setuptools>42
+  - wheel
+  - setuptools_scm
+  - myst-parser
+  - jinja2
+  - livereload
+  - nox

@@ -1,0 +1,7 @@
+.nox/
+*.pyc
+dist/
+.coverage
+*.egg-info
+__pycache__
+**/_version.py

@@ -1,0 +1,6 @@
+prune env
+prune .github
+exclude .codecov.yml
+exclude .gitignore
+exclude noxfile.py
+exclude environment.yml
