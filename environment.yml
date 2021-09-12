@@ -3,12 +3,17 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.7
+  - python==3.9
+  # Build
   - pip
-  - setuptools>42
-  - wheel
   - setuptools_scm
+  - black
+  - flake8
+  - make
+  # Test
+  - pytest
+  # Run
   - myst-parser
   - jinja2
+  - pyyaml
   - livereload
-  - nox

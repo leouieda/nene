@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="{{ config.language }}">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title|striptags|e }} | {{ config.site_name|striptags|e }}</title>
+</head>
+
+<body>
+  <header class="menu">
+    <div class="container">
+      <nav>
+        <ul class="nav justify-content-center">
+          <li class="nav-item ">
+            <a href="/">Home</a>
+          </li>
+          {%- for name, url in config.menu %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url }}">{{ name }}</a>
+            </li>
+          {%- endfor %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container page-content narrow">
+    {{ page.body }}
+
+    <h2>Site:</h2>
+    {{ site|e }}
+  </div>
+
+
+</body>
+</html>
+

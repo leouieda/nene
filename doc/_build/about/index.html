@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Nene | Nene</title>
+</head>
+
+<body>
+  <header class="menu">
+    <div class="container">
+      <nav>
+        <ul class="nav justify-content-center">
+          <li class="nav-item ">
+            <a href="/">Home</a>
+          </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about">About</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container page-content narrow">
+    
+<p>Oh wow, another page!</p>
+
+
+    <h2>Site:</h2>
+    {&#39;index&#39;: {&#39;id&#39;: &#39;index&#39;, &#39;path&#39;: &#39;index.html&#39;, &#39;source&#39;: &#39;index.md&#39;, &#39;title&#39;: &#39;Nene documetation&#39;, &#39;template&#39;: &#39;base.html&#39;, &#39;markdown&#39;: &#39;\n\nSome text. **In markdown!**\n\nTemplates in the sources? Yes!\n\nPage name: {{ page.title }}\n\nHTML: {{ page.path }}\n\n{%- for name, url in config.menu %}\n&lt;li class=&#34;nav-item&#34;&gt;\n  &lt;a class=&#34;nav-link&#34; href=&#34;{{ url }}&#34;&gt;{{ name }}&lt;/a&gt;\n&lt;/li&gt;\n{%- endfor %}\n\nInception:\n\n{{ page.markdown }}\n&#39;, &#39;body&#39;: &#39;\n&lt;p&gt;Some text. &lt;strong&gt;In markdown!&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;Templates in the sources? Yes!&lt;/p&gt;\n&lt;p&gt;Page name: Nene documetation&lt;/p&gt;\n&lt;p&gt;HTML: index.html&lt;/p&gt;\n&lt;li class=&#34;nav-item&#34;&gt;\n  &lt;a class=&#34;nav-link&#34; href=&#34;/about&#34;&gt;About&lt;/a&gt;\n&lt;/li&gt;\n&lt;p&gt;Inception:&lt;/p&gt;\n&lt;p&gt;Some text. &lt;strong&gt;In markdown!&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;Templates in the sources? Yes!&lt;/p&gt;\n&lt;p&gt;Page name: {{ page.title }}&lt;/p&gt;\n&lt;p&gt;HTML: {{ page.path }}&lt;/p&gt;\n&lt;p&gt;{%- for name, url in config.menu %}&lt;/p&gt;\n&lt;li class=&#34;nav-item&#34;&gt;\n  &lt;a class=&#34;nav-link&#34; href=&#34;{{ url }}&#34;&gt;{{ name }}&lt;/a&gt;\n&lt;/li&gt;\n{%- endfor %}\n&lt;p&gt;Inception:&lt;/p&gt;\n&lt;p&gt;{{ page.markdown }}&lt;/p&gt;\n&#39;}, &#39;about/index&#39;: {&#39;id&#39;: &#39;about/index&#39;, &#39;path&#39;: &#39;about/index.html&#39;, &#39;source&#39;: &#39;about/index.md&#39;, &#39;title&#39;: &#39;About Nene&#39;, &#39;template&#39;: &#39;base.html&#39;, &#39;markdown&#39;: &#39;\n\nOh wow, another page!\n&#39;, &#39;body&#39;: &#39;\n&lt;p&gt;Oh wow, another page!&lt;/p&gt;\n&#39;}}
+  </div>
+
+
+</body>
+</html>
