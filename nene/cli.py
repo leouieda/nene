@@ -10,6 +10,8 @@ import myst_parser.main
 import yaml
 import livereload
 import jinja2
+import rich.console
+import click
 
 
 def parse_config():
@@ -45,8 +47,10 @@ def main():
     """
     Main program
     """
+
+    console = rich.console.Console(stderr=True)
+
     config = parse_config()
-    print("Configuration:\n", config)
 
     copy, render = crawl(root=Path("."), ignore=config["ignore"])
 
@@ -60,14 +64,16 @@ def main():
             server.watch(filename, "nene")
         server.serve(root="_build/", host="localhost", open_url_delay=1)
 
+    console.print("Configuration:", config)
+
     jinja_env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(["_templates", "."], followlinks=True),
     )
 
-    print("Parsing Markdown files:")
+    console.print("Parsing Markdown files:")
     site = {}
     for path in render:
-        print(f"  {str(path)}")
+        console.print(f"  {str(path)}")
         identifier = str(path.parent / path.stem)
         page = {
             "id": identifier,
@@ -80,35 +86,37 @@ def main():
         page["markdown"] = markdown
         site[identifier] = page
 
-    print("Rendering Markdown:")
+    console.print("Rendering Markdown:")
     for identifier in site:
         page = site[identifier]
-        print(f"  {page['source']}")
+        console.print(f"  {page['source']}")
         template = jinja_env.get_template(page["source"], parent=".")
         markdown = template.render(page=page, config=config, site=site)
         page["body"] = myst_parser.main.to_html(markdown)
 
-    print("Rendering HTML:")
+    console.print("Rendering HTML:")
     rendered_html = {}
     for identifier in site:
         page = site[identifier]
-        print(f"  {page['source']}")
+        console.print(f"  {page['source']}")
         template = jinja_env.get_template(page["template"])
         rendered_html[page["path"]] = template.render(
             page=page, config=config, site=site
         )
 
-    print("Copying directory tree:")
+    console.print("Copying directory tree:")
     for path in copy:
-        print(f"  {str(path)}")
+        console.print(f"  {str(path)}")
         destination = output / path
         if path.is_dir():
             destination.mkdir(exist_ok=True)
         else:
             shutil.copyfile(path, destination)
 
-    print("Writing HTML output:")
+    console.print("Writing HTML output:")
     for fname in rendered_html:
         destination = output / Path(fname)
-        print(f"  {str(destination)}")
+        console.print(f"  {str(destination)}")
         destination.write_text(rendered_html[fname])
+
+    console.print("Done :rocket:")

@@ -17,3 +17,5 @@ dependencies:
   - jinja2
   - pyyaml
   - livereload
+  - rich
+  - click
