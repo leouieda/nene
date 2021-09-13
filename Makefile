@@ -27,11 +27,6 @@ check:
 	@echo
 	@flake8 .
 	@echo
-	@echo "Checking distribution packages..."
-	@echo
-	@python setup.py --quiet sdist bdist_wheel
-	@twine check dist/*
-	@echo
 	@echo "Done!"
 
 clean:
