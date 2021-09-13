@@ -1,10 +1,12 @@
+# Copyright (c) 2021 Leonardo Uieda.
+# Distributed under the terms of the MIT License.
+# SPDX-License-Identifier: MIT
 """
-Build and install the project.
+Setup configuration for the Python package.
 
-Project metadata and build configuration is defined in setup.cfg.
+Metadata and build configuration are defined in setup.cfg.
 """
 from setuptools import setup
-
 
 setup(
     use_scm_version={

@@ -1,9 +1,15 @@
+# Copyright (c) 2021 Leonardo Uieda.
+# Distributed under the terms of the MIT License.
+# SPDX-License-Identifier: MIT
 """
-Core functions used to parse inputs and generate HTML
+Core functions used to parse inputs, generate HTML, etc.
+
+Should be independent of the command-line interface so they can be tested in
+isolation.
 """
-from pathlib import Path
 import json
 import logging
+from pathlib import Path
 
 import livereload
 import yaml
@@ -28,6 +34,7 @@ def parse_config(fname):
         "ignore": [],
         "output_dir": "_build",
         "templates_dir": "_templates",
+        "copy": [],
     }
     with open(fname) as config_file:
         config.update(json.load(config_file))
@@ -35,7 +42,7 @@ def parse_config(fname):
     return config
 
 
-def crawl(root, ignore):
+def crawl(root, ignore, copy_extra):
     """
     Crawl the directory root separating Markdown, JSON, and files for copying.
 
@@ -47,6 +54,8 @@ def crawl(root, ignore):
         The base path to start crawling.
     ignore : list of str
         List of paths to ignore when crawling.
+    copy_extra : list of str
+        List of extra paths to copy to the build directory.
 
     Returns
     -------
@@ -56,9 +65,13 @@ def crawl(root, ignore):
         both files and directories.
 
     """
-    tree = dict(copy=[], markdown=[], json=[])
+    tree = {"copy": [Path(path) for path in copy_extra], "markdown": [], "json": []}
     for path in Path(root).glob("**/*"):
-        if str(path) in ignore or path.parts[0].startswith("_"):
+        if (
+            str(path) in ignore
+            or path.parts[0].startswith("_")
+            or path.name.startswith(".")
+        ):
             continue
         if path.suffix == ".md":
             tree["markdown"].append(path)
@@ -71,7 +84,7 @@ def crawl(root, ignore):
 
 def serve_and_watch(path, config_file, watch, extra, quiet):
     """
-    Serve the output folder with livereload and watch the tree and extra files
+    Serve the output folder with livereload and watch the tree and extra files.
 
     Parameters
     ----------
@@ -103,6 +116,16 @@ def serve_and_watch(path, config_file, watch, extra, quiet):
 def load_markdown(path):
     """
     Read Markdown content from path, including YAML front matter.
+
+    Parameters
+    ----------
+    path : :class:`pathlib.Path`
+        The path of the Markdown file.
+
+    Returns
+    -------
+    page : dict
+        Dictionary with the parsed YAML front-matter and Markdown body.
     """
     identifier = str(path.parent / path.stem)
     page = {

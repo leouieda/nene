@@ -1,36 +1,38 @@
+# Copyright (c) 2021 Leonardo Uieda.
+# Distributed under the terms of the MIT License.
+# SPDX-License-Identifier: MIT
 """
-Command line interface
+Defines the command line interface.
+
+Uses click to define a CLI around the ``main`` function.
 """
-from pathlib import Path
 import shutil
+from pathlib import Path
 
-import myst_parser.main
-import jinja2
-import rich.console
 import click
+import jinja2
+import myst_parser.main
+import rich.console
 
-from .core import crawl, parse_config, serve_and_watch, load_markdown
+from .core import crawl, load_markdown, parse_config, serve_and_watch
 
-
-CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 DEFAULT_CONFIG = "config.json"
 
 
 def make_console(verbose):
     """
     Start up the :class:`rich.console.Console` instance we'll use.
+
+    Parameters
+    ----------
+    verbose : bool
+        Whether or not to print status messages to stderr.
     """
     return rich.console.Console(stderr=True, quiet=not verbose)
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
-@click.option(
-    "--verbose/--quiet",
-    "-v/-q",
-    default=True,
-    show_default=True,
-    help="Print information during execution / Don't print",
-)
 @click.option(
     "--config",
     "-c",
@@ -46,13 +48,20 @@ def make_console(verbose):
     show_default=True,
     help="Serve the built website and watch for changes (opens your browser)",
 )
+@click.option(
+    "--verbose/--quiet",
+    "-v/-q",
+    default=True,
+    show_default=True,
+    help="Print information during execution / Don't print",
+)
 @click.version_option()
-def main(verbose, config, serve):
+def main(config, serve, verbose):
     """
-    A no-nonsense static site generator
+    Nēnē: A no-frills static site generator.
 
-    Builds the website HTML from the given sources, templates, and
-    configuration found in the current directory.
+    Builds a static HTML website from sources, templates, and configuration
+    found in the current directory.
     """
     console = make_console(verbose)
     console.print(":building_construction:  [b]Building website...[/b]")
@@ -64,7 +73,7 @@ def main(verbose, config, serve):
     )
 
     console.print(":open_file_folder: [b]Scanning source directory...[/b]", end=" ")
-    tree = crawl(root=Path("."), ignore=config["ignore"])
+    tree = crawl(root=Path("."), ignore=config["ignore"], copy_extra=config["copy"])
     console.print("Found:")
     console.print(f"   Markdown files = {len(tree['markdown'])}")
     console.print(f"   JSON files     = {len(tree['json'])}")

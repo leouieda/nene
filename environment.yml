@@ -4,18 +4,7 @@ channels:
   - defaults
 dependencies:
   - python==3.9
-  # Build
   - pip
-  - setuptools_scm
-  - black
-  - flake8
   - make
-  # Test
-  - pytest
-  # Run
-  - myst-parser
-  - jinja2
-  - pyyaml
-  - livereload
-  - rich
-  - click
+  - pip:
+    - -e .[dev]
