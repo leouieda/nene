@@ -1,5 +1,8 @@
 # Nēnē: A no-frills static site generator
 
+[![Latest release on PyPI](https://img.shields.io/pypi/v/nene.svg?style=flat-square)][pypi]
+[![Compatible Python versions](https://img.shields.io/pypi/pyversions/nene.svg?style=flat-square)][pypi]
+
 Static website generators seem to be the favourite pass time of developers
 procrastinating on other more important projects.
 So of course, I wanted to try making my own!
