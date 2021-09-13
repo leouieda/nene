@@ -1,122 +1,158 @@
 """
 Command line interface
 """
-import sys
 from pathlib import Path
 import shutil
-import json
 
 import myst_parser.main
-import yaml
-import livereload
 import jinja2
 import rich.console
 import click
 
+from .core import crawl, parse_config, serve_and_watch, load_markdown
 
-def parse_config():
+
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+DEFAULT_CONFIG = "config.json"
+
+
+def make_console(verbose):
     """
-    Get the configuration
+    Start up the :class:`rich.console.Console` instance we'll use.
     """
-    config = {
-        "ignore": [],
-    }
-    with open("config.json") as config_file:
-        config.update(json.load(config_file))
-    config["ignore"].append("config.json")
-    return config
+    return rich.console.Console(stderr=True, quiet=not verbose)
 
 
-def crawl(root, ignore):
-    """
-    Crawl the directory for markdown files and files for copying.
-    """
-    copy = []
-    render = []
-    for path in root.glob("**/*"):
-        if str(path) in ignore or path.parts[0].startswith("_"):
-            continue
-        if path.suffix == ".md":
-            render.append(path)
-        else:
-            copy.append(path)
-    return copy, render
-
-
+@click.group(context_settings=CONTEXT_SETTINGS)
+@click.version_option()
 def main():
     """
-    Main program
+    A no-nonsense static site generator
     """
+    pass
 
-    console = rich.console.Console(stderr=True)
 
-    config = parse_config()
+@main.command(short_help="Serve the HTML and watch for changes")
+@click.option(
+    "--verbose/--quiet",
+    "-v/-q",
+    default=True,
+    show_default=True,
+    help="Print server log messages / Don't print",
+)
+def serve(verbose):
+    """
+    Serve the generated HTML, open a browser, and watch files for changes.
 
-    copy, render = crawl(root=Path("."), ignore=config["ignore"])
+    The HTML is automatically rebuilt and the website reloaded in the browser
+    every time a source file is changed.
+    """
+    config_file = DEFAULT_CONFIG
+    config = parse_config(config_file)
 
-    output = Path("_build")
-    output.mkdir(exist_ok=True)
-
-    if len(sys.argv) > 1 and sys.argv[1] == "serve":
-        server = livereload.Server()
-        files = copy + render + ["config.json", "_templates"]
-        for filename in files:
-            server.watch(filename, "nene")
-        server.serve(root="_build/", host="localhost", open_url_delay=1)
-
-    console.print("Configuration:", config)
-
-    jinja_env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(["_templates", "."], followlinks=True),
+    console = make_console(verbose)
+    console.print(
+        f":eyes: [b]Serving files in '{config['output_dir']}' and "
+        f"watching for changes...[/b]"
+    )
+    console.print(
+        f":package: [b]Loaded configuration from '{config_file}':[/b]", config
     )
 
-    console.print("Parsing Markdown files:")
-    site = {}
-    for path in render:
-        console.print(f"  {str(path)}")
-        identifier = str(path.parent / path.stem)
-        page = {
-            "id": identifier,
-            "path": str(path.with_suffix(".html")),
-            "source": str(path),
-        }
-        source = path.read_text()
-        front_matter, markdown = source.split("---")[1:]
-        page.update(yaml.safe_load(front_matter.strip()))
-        page["markdown"] = markdown
-        site[identifier] = page
+    tree = crawl(root=Path("."), ignore=config["ignore"])
 
-    console.print("Rendering Markdown:")
+    output = Path(config["output_dir"])
+    output.mkdir(exist_ok=True)
+
+    serve_and_watch(
+        output,
+        watch=tree,
+        extra=[config_file, config["templates_dir"]],
+        quiet=not verbose,
+    )
+
+
+@main.command(short_help="Build HTML output")
+@click.option(
+    "--verbose/--quiet",
+    "-v/-q",
+    default=True,
+    show_default=True,
+    help="Print information about the build / Don't print",
+)
+def build(verbose):
+    """
+    Build the HTML files from the sources and configuration.
+
+    Output is placed in the "_build" directory.
+    """
+    console = make_console(verbose)
+    console.print(":building_construction:  [b]Building website...[/b]")
+
+    config_file = DEFAULT_CONFIG
+    config = parse_config(config_file)
+    console.print(
+        f":package: [b]Loaded configuration from '{config_file}':[/b]", config
+    )
+
+    console.print(":open_file_folder: [b]Scanning source directory...[/b]", end=" ")
+    tree = crawl(root=Path("."), ignore=config["ignore"])
+    console.print("Found:")
+    console.print(f"   Markdown files = {len(tree['markdown'])}")
+    console.print(f"   JSON files     = {len(tree['json'])}")
+    console.print(f"   Other files    = {len(tree['copy'])}")
+
+    output = Path(config["output_dir"])
+    output.mkdir(exist_ok=True)
+
+    # Need to add the current dir so we can use the Markdown files as templates
+    jinja_env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(
+            [config["templates_dir"], "."], followlinks=True
+        ),
+    )
+
+    console.print(":open_book: [b]Reading Markdown files:[/b]")
+    site = {}
+    for path in tree["markdown"]:
+        console.print(f"   {str(path)}")
+        page = load_markdown(path)
+        site[page["id"]] = page
+
+    console.print(":art: [b]Rendering templates in Markdown files:[/b]")
     for identifier in site:
         page = site[identifier]
-        console.print(f"  {page['source']}")
+        console.print(f"   {page['source']}")
         template = jinja_env.get_template(page["source"], parent=".")
         markdown = template.render(page=page, config=config, site=site)
         page["body"] = myst_parser.main.to_html(markdown)
 
-    console.print("Rendering HTML:")
+    console.print(":art: [b]Rendering HTML templates:[/b]")
     rendered_html = {}
     for identifier in site:
         page = site[identifier]
-        console.print(f"  {page['source']}")
+        console.print(f"   {page['path']} ← {page['template']}")
         template = jinja_env.get_template(page["template"])
         rendered_html[page["path"]] = template.render(
             page=page, config=config, site=site
         )
 
-    console.print("Copying directory tree:")
-    for path in copy:
-        console.print(f"  {str(path)}")
+    console.print(
+        ":deciduous_tree: [b]Copying source directory tree and extra files to "
+        f"'{str(output)}':[/b]"
+    )
+    for path in tree["copy"]:
+        console.print(f"   {str(path)}")
         destination = output / path
         if path.is_dir():
             destination.mkdir(exist_ok=True)
         else:
             shutil.copyfile(path, destination)
 
-    console.print("Writing HTML output:")
+    console.print(f":writing_hand:  [b]Writing HTML files to '{str(output)}':[/b]")
     for fname in rendered_html:
         destination = output / Path(fname)
-        console.print(f"  {str(destination)}")
+        console.print(f"   {str(destination)}")
         destination.write_text(rendered_html[fname])
 
-    console.print("Done :rocket:")
+    console.print(":rocket: [b]Done![/b] :tada:")

@@ -7,7 +7,6 @@
         ["About", "/about"]
     ],
     "ignore": [
-        "ignored.md",
         "README.md"
     ],
     "copy": [
