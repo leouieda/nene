@@ -15,6 +15,9 @@ But I also wanted something:
 
 * **No-frills:** I don't want fancy built-in templates, blogging frameworks,
   etc. I'm mostly rolling my own templates.
+* **Templates have access to the entire content:** Not all generators allow any
+  page to have access to the entire website content. Yes this can cause
+  problems with memory, but memory is cheap and I need this feature.
 * **Allows templates in Markdown:** Using templating constructs in Markdown
   source files is extremely useful. I've only ever seen this in [Urubu][urubu].
 * **Reads data from non-Markdown sources:** Most generators only allow data to
