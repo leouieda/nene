@@ -23,73 +23,41 @@ def make_console(verbose):
     return rich.console.Console(stderr=True, quiet=not verbose)
 
 
-@click.group(context_settings=CONTEXT_SETTINGS)
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.option(
+    "--verbose/--quiet",
+    "-v/-q",
+    default=True,
+    show_default=True,
+    help="Print information during execution / Don't print",
+)
+@click.option(
+    "--config",
+    "-c",
+    default=DEFAULT_CONFIG,
+    show_default=True,
+    help="Specify a different configuration file",
+)
+@click.option(
+    "--serve",
+    "-s",
+    default=False,
+    is_flag=True,
+    show_default=True,
+    help="Serve the built website and watch for changes (opens your browser)",
+)
 @click.version_option()
-def main():
+def main(verbose, config, serve):
     """
     A no-nonsense static site generator
-    """
-    pass
 
-
-@main.command(short_help="Serve the HTML and watch for changes")
-@click.option(
-    "--verbose/--quiet",
-    "-v/-q",
-    default=True,
-    show_default=True,
-    help="Print server log messages / Don't print",
-)
-def serve(verbose):
-    """
-    Serve the generated HTML, open a browser, and watch files for changes.
-
-    The HTML is automatically rebuilt and the website reloaded in the browser
-    every time a source file is changed.
-    """
-    config_file = DEFAULT_CONFIG
-    config = parse_config(config_file)
-
-    console = make_console(verbose)
-    console.print(
-        f":eyes: [b]Serving files in '{config['output_dir']}' and "
-        f"watching for changes...[/b]"
-    )
-    console.print(
-        f":package: [b]Loaded configuration from '{config_file}':[/b]", config
-    )
-
-    tree = crawl(root=Path("."), ignore=config["ignore"])
-
-    output = Path(config["output_dir"])
-    output.mkdir(exist_ok=True)
-
-    serve_and_watch(
-        output,
-        watch=tree,
-        extra=[config_file, config["templates_dir"]],
-        quiet=not verbose,
-    )
-
-
-@main.command(short_help="Build HTML output")
-@click.option(
-    "--verbose/--quiet",
-    "-v/-q",
-    default=True,
-    show_default=True,
-    help="Print information about the build / Don't print",
-)
-def build(verbose):
-    """
-    Build the HTML files from the sources and configuration.
-
-    Output is placed in the "_build" directory.
+    Builds the website HTML from the given sources, templates, and
+    configuration found in the current directory.
     """
     console = make_console(verbose)
     console.print(":building_construction:  [b]Building website...[/b]")
 
-    config_file = DEFAULT_CONFIG
+    config_file = config
     config = parse_config(config_file)
     console.print(
         f":package: [b]Loaded configuration from '{config_file}':[/b]", config
@@ -156,3 +124,16 @@ def build(verbose):
         destination.write_text(rendered_html[fname])
 
     console.print(":rocket: [b]Done![/b] :tada:")
+
+    if serve:
+        console.print(
+            f":eyes: [b]Serving files in '{config['output_dir']}' and "
+            f"watching for changes...[/b]"
+        )
+        serve_and_watch(
+            output,
+            config_file,
+            watch=tree,
+            extra=[config_file, config["templates_dir"]],
+            quiet=not verbose,
+        )

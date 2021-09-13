@@ -69,7 +69,7 @@ def crawl(root, ignore):
     return tree
 
 
-def serve_and_watch(path, watch, extra, quiet):
+def serve_and_watch(path, config_file, watch, extra, quiet):
     """
     Serve the output folder with livereload and watch the tree and extra files
 
@@ -77,6 +77,8 @@ def serve_and_watch(path, watch, extra, quiet):
     ----------
     path : str or :class:`pathlib.Path`
         The path that will be served.
+    config_file : str or :class:`pathlib.Path`
+        The configuration file used.
     watch : dict
         Dictionary with lists of source files that will be watched for changes.
         Usually the output of :func:`nene.core.crawl`.
@@ -94,7 +96,7 @@ def serve_and_watch(path, watch, extra, quiet):
     for category in watch:
         files.extend(watch[category])
     for filename in files:
-        server.watch(filename, "nene build --quiet")
+        server.watch(filename, f"nene --config={config_file} --quiet")
     server.serve(root=path, host="localhost", open_url_delay=1)
 
 
