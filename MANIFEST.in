@@ -1,5 +1,3 @@
-prune env
 prune .github
-exclude .codecov.yml
 exclude .gitignore
 exclude environment.yml
