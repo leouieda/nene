@@ -1,3 +1,0 @@
-myst-parser
-jinja2
-livereload
