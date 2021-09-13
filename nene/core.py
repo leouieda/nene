@@ -67,11 +67,9 @@ def crawl(root, ignore, copy_extra):
     """
     tree = {"copy": [Path(path) for path in copy_extra], "markdown": [], "json": []}
     for path in Path(root).glob("**/*"):
-        if (
-            str(path) in ignore
-            or path.parts[0].startswith("_")
-            or path.name.startswith(".")
-        ):
+        if str(path) in ignore:
+            continue
+        if path.parts[0].startswith("_") or path.name.startswith("."):
             continue
         if path.suffix == ".md":
             tree["markdown"].append(path)
