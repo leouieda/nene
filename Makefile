@@ -8,12 +8,31 @@ test:
 	pytest $(PYTEST_ARGS) $(PROJECT)
 
 format:
-	isort .
-	black .
+	@echo "Formatting import order with isort..."
+	@echo
+	@isort .
+	@echo
+	@echo "Formatting code with black..."
+	@echo
+	@black .
+	@echo
+	@echo "Done!"
 
 check:
-	black --check .
-	flake8 .
+	@echo "Checking black code formatting..."
+	@echo
+	@black --check .
+	@echo
+	@echo "Linting with flake8..."
+	@echo
+	@flake8 .
+	@echo
+	@echo "Checking distribution packages..."
+	@echo
+	@python setup.py --quiet sdist bdist_wheel
+	@twine check dist/*
+	@echo
+	@echo "Done!"
 
 clean:
 	find . -name "*.pyc" -exec rm -v {} \;
