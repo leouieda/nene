@@ -2,7 +2,6 @@
 title: Installing
 ---
 
-
 Nēnē is available from [PyPI][pypi] and can be installed with [pip][pip]:
 
 ```bash

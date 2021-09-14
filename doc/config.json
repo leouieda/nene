@@ -5,7 +5,8 @@
     "repository": "leouieda/nene",
     "menu": [
         ["About", "/about"],
-        ["Manual", "/manual"]
+        ["Manual", "/manual"],
+        ["Install", "/manual/install.html"]
     ],
     "ignore": [
         "README.md"

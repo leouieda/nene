@@ -106,7 +106,7 @@ def main(config, serve, verbose):
             data[datum["parent"]] = []
         data[datum["parent"]].append(datum)
 
-    console.print(":microbe: [b]Propagating data through the website:[/b]")
+    console.print(":truck: [b]Propagating data through the website:[/b]")
     for page in site.values():
         if page["parent"] in data:
             console.print(f"   {page['source']}:")
