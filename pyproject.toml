@@ -2,3 +2,8 @@
 # string). Actual configuration is in setup.py and setup.cfg.
 [build-system]
 requires = ["setuptools>=30.3.0", "wheel", "setuptools_scm"]
+
+# Make sure isort and Black are compatible
+[tool.isort]
+profile = "black"
+multi_line_output = 3
