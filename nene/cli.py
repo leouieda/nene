@@ -11,10 +11,17 @@ from pathlib import Path
 
 import click
 import jinja2
-import myst_parser.main
 import rich.console
 
-from .core import crawl, load_json, load_markdown, parse_config, serve_and_watch
+from .core import (
+    crawl,
+    load_json,
+    load_jupyter_notebook,
+    load_markdown,
+    markdown_to_html,
+    parse_config,
+    serve_and_watch,
+)
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 DEFAULT_CONFIG = "config.json"
@@ -75,9 +82,10 @@ def main(config, serve, verbose):
     console.print(":open_file_folder: [b]Scanning source directory...[/b]", end=" ")
     tree = crawl(root=Path("."), ignore=config["ignore"], copy_extra=config["copy"])
     console.print("Found:")
-    console.print(f"   Markdown files = {len(tree['markdown'])}")
-    console.print(f"   JSON files     = {len(tree['json'])}")
-    console.print(f"   Other files    = {len(tree['copy'])}")
+    console.print(f"   Markdown         = {len(tree['markdown'])}")
+    console.print(f"   Jupyter notebook = {len(tree['ipynb'])}")
+    console.print(f"   JSON             = {len(tree['json'])}")
+    console.print(f"   Other            = {len(tree['copy'])}")
 
     output = Path(config["output_dir"])
     output.mkdir(exist_ok=True)
@@ -89,39 +97,56 @@ def main(config, serve, verbose):
         ),
     )
 
-    console.print(":open_book: [b]Reading Markdown files:[/b]")
     site = {}
-    for path in tree["markdown"]:
-        console.print(f"   {str(path)}")
-        page = load_markdown(path)
-        site[page["id"]] = page
+    data = {}
+
+    console.print(":open_book: [b]Reading Markdown files:[/b]")
+    if tree["markdown"]:
+        for path in tree["markdown"]:
+            console.print(f"   {str(path)}")
+            page = load_markdown(path)
+            site[page["id"]] = page
+    else:
+        console.print("   There weren't any :disappointed:")
+
+    console.print(":open_book: [b]Reading Jupyter Notebook files as Markdown:[/b]")
+    if tree["ipynb"]:
+        for path in tree["ipynb"]:
+            console.print(f"   {str(path)}")
+            page = load_jupyter_notebook(path)
+            site[page["id"]] = page
+    else:
+        console.print("   There weren't any :disappointed:")
 
     console.print(":open_book: [b]Reading JSON data files:[/b]")
-    # Organizing data by parent folder makes it easier to apply it later
-    data = {}
-    for path in tree["json"]:
-        console.print(f"   {str(path)}")
-        datum = load_json(path)
-        if datum["parent"] not in data:
-            data[datum["parent"]] = []
-        data[datum["parent"]].append(datum)
+    if tree["json"]:
+        # Organizing data by parent folder makes it easier to apply it later
+        for path in tree["json"]:
+            console.print(f"   {str(path)}")
+            datum = load_json(path)
+            if datum["parent"] not in data:
+                data[datum["parent"]] = []
+            data[datum["parent"]].append(datum)
+    else:
+        console.print("   There weren't any :disappointed:")
 
     console.print(":truck: [b]Propagating data through the website:[/b]")
-    for page in site.values():
-        if page["parent"] in data:
-            console.print(f"   {page['source']}:")
-            for datum in data[page["parent"]]:
-                console.print(f"     ↳ {datum['source']}")
-                page.update(datum["json"])
+    if data:
+        for page in site.values():
+            if page["parent"] in data:
+                console.print(f"   {page['source']}:")
+                for datum in data[page["parent"]]:
+                    console.print(f"     ↳ {datum['source']}")
+                    page.update(datum["json"])
+    else:
+        console.print("   There wasn't any :disappointed:")
 
-    console.print(":art: [b]Rendering templates in Markdown files:[/b]")
+    console.print(":butterfly: [b]Transforming Markdown to HTML:[/b]")
     for page in site.values():
         console.print(f"   {page['source']}")
-        template = jinja_env.get_template(page["source"], parent=".")
-        markdown = template.render(page=page, config=config, site=site)
-        page["body"] = myst_parser.main.to_html(markdown)
+        page["body"] = markdown_to_html(page, jinja_env, config, site)
 
-    console.print(":art: [b]Rendering HTML templates:[/b]")
+    console.print(":art: [b]Rendering HTML output:[/b]")
     rendered_html = {}
     for page in site.values():
         console.print(f"   {page['path']} ← {page['template']}")
@@ -137,16 +162,28 @@ def main(config, serve, verbose):
     for path in tree["copy"]:
         console.print(f"   {str(path)}")
         destination = output / path
-        if path.is_dir():
-            destination.mkdir(exist_ok=True)
-        else:
-            shutil.copyfile(path, destination)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, destination)
 
     console.print(f":writing_hand:  [b]Writing HTML files to '{str(output)}':[/b]")
     for fname in rendered_html:
         destination = output / Path(fname)
         console.print(f"   {str(destination)}")
+        destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(rendered_html[fname])
+
+    console.print(":bar_chart: [b]Writing Jupyter Notebook image files:[/b]")
+    if tree["ipynb"]:
+        for page in site.values():
+            if "images" in page:
+                console.print(f"   {page['source']}")
+                for image_path, image in page["images"].items():
+                    path = output / Path(page["parent"]) / Path(image_path)
+                    console.print(f"     ↳ {str(path)}")
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(image)
+    else:
+        console.print("   There weren't any :disappointed:")
 
     console.print(":rocket: [b]Done![/b] :tada:")
 

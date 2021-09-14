@@ -27,14 +27,14 @@
 
   <div class="container page-content narrow">
 
+    <h1>{{ page.title }}</h1>
+
     {%- if page.flavor is defined %}
-        {{ page.flavor }}
+        Favorite shave ice flavor: {{ page.flavor }}
     {%- endif %}
 
     {{ page.body }}
 
-    <h2>Site:</h2>
-    {{ site|e }}
   </div>
 
 

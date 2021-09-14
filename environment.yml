@@ -7,4 +7,4 @@ dependencies:
   - pip
   - make
   - pip:
-    - -e .[dev,lint]
+    - -e .[jupyter,dev,lint]
