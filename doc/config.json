@@ -1,10 +1,11 @@
 {
-    "site_name": "Nene",
-    "description": "A static site generator",
+    "site_name": "Nēnē",
+    "description": "A no-frills static site generator",
     "language": "en",
     "repository": "leouieda/nene",
     "menu": [
-        ["About", "/about"]
+        ["About", "/about"],
+        ["Manual", "/manual"]
     ],
     "ignore": [
         "README.md"

@@ -128,6 +128,7 @@ def load_markdown(path):
     identifier = str(path.parent / path.stem)
     page = {
         "id": identifier,
+        "parent": str(path.parent),
         "path": str(path.with_suffix(".html")),
         "source": str(path),
     }
@@ -136,3 +137,28 @@ def load_markdown(path):
     page.update(yaml.safe_load(front_matter.strip()))
     page["markdown"] = markdown
     return page
+
+
+def load_json(path):
+    """
+    Read JSON  data from path.
+
+    Parameters
+    ----------
+    path : :class:`pathlib.Path`
+        The path of the JSON file.
+
+    Returns
+    -------
+    data : dict
+        Dictionary with the file ID in ``"id"`` and the JSON data in
+        ``"json"``.
+    """
+    identifier = str(path.parent / path.stem)
+    data = {
+        "id": identifier,
+        "parent": str(path.parent),
+        "source": str(path),
+        "json": json.loads(path.read_text()),
+    }
+    return data

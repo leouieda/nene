@@ -1,5 +1,5 @@
 ---
-title: About Nene
+title: About Nēnē
 template: base.html
 ---
 

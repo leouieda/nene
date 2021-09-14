@@ -14,7 +14,7 @@ import jinja2
 import myst_parser.main
 import rich.console
 
-from .core import crawl, load_markdown, parse_config, serve_and_watch
+from .core import crawl, load_json, load_markdown, parse_config, serve_and_watch
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 DEFAULT_CONFIG = "config.json"
@@ -96,9 +96,26 @@ def main(config, serve, verbose):
         page = load_markdown(path)
         site[page["id"]] = page
 
+    console.print(":open_book: [b]Reading JSON data files:[/b]")
+    # Organizing data by parent folder makes it easier to apply it later
+    data = {}
+    for path in tree["json"]:
+        console.print(f"   {str(path)}")
+        datum = load_json(path)
+        if datum["parent"] not in data:
+            data[datum["parent"]] = []
+        data[datum["parent"]].append(datum)
+
+    console.print(":microbe: [b]Propagating data through the website:[/b]")
+    for page in site.values():
+        if page["parent"] in data:
+            console.print(f"   {page['source']}:")
+            for datum in data[page["parent"]]:
+                console.print(f"     ↳ {datum['source']}")
+                page.update(datum["json"])
+
     console.print(":art: [b]Rendering templates in Markdown files:[/b]")
-    for identifier in site:
-        page = site[identifier]
+    for page in site.values():
         console.print(f"   {page['source']}")
         template = jinja_env.get_template(page["source"], parent=".")
         markdown = template.render(page=page, config=config, site=site)
@@ -106,8 +123,7 @@ def main(config, serve, verbose):
 
     console.print(":art: [b]Rendering HTML templates:[/b]")
     rendered_html = {}
-    for identifier in site:
-        page = site[identifier]
+    for page in site.values():
         console.print(f"   {page['path']} ← {page['template']}")
         template = jinja_env.get_template(page["template"])
         rendered_html[page["path"]] = template.render(

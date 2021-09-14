@@ -26,6 +26,11 @@
   </header>
 
   <div class="container page-content narrow">
+
+    {%- if page.flavor is defined %}
+        {{ page.flavor }}
+    {%- endif %}
+
     {{ page.body }}
 
     <h2>Site:</h2>
