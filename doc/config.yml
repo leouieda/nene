@@ -1,6 +1,7 @@
 # Use YAML for configuration since it allows comments like this
 site_name: Nēnē
 description: A no-frills static site generator
+author: Leonardo Uieda
 language: en
 repository: leouieda/nene
 menu:
@@ -9,5 +10,6 @@ menu:
   - [Install, /manual/install.html]
 ignore:
   - README.md
+  - config-alternative.json
 copy:
   - .nojekyll

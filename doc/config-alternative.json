@@ -9,7 +9,8 @@
         ["Install", "/manual/install.html"]
     ],
     "ignore": [
-        "README.md"
+        "README.md",
+        "config.yml"
     ],
     "copy": [
       ".nojekyll"

@@ -24,7 +24,7 @@ from .core import (
 )
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
-DEFAULT_CONFIG = "config.json"
+DEFAULT_CONFIG = "config.yml"
 
 
 def make_console(verbose):
