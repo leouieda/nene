@@ -26,14 +26,36 @@ except ImportError:
     nbformat = None
 
 
+def parse_data_file(path):
+    """
+    Read the contents of a data file in JSON or YAML format.
+
+    Parameters
+    ----------
+    path : :class:`pathlib.Path`
+        The path of the JSON or YAML data file.
+
+    Returns
+    -------
+    data : dict
+        The contents of the file as a dictionary.
+    """
+    path = Path(path)
+    suffix = path.suffix
+    loader = {".yml": yaml.safe_load, ".yaml": yaml.safe_load, ".json": json.loads}
+    data = loader[suffix](path.read_text())
+    return data
+
+
 def parse_config(fname):
     """
-    Load configuration from a JSON file and append to the defaults.
+    Load configuration from a JSON or YAML file and append to the defaults.
 
     Parameters
     ----------
     fname : str or :class:`pathlib.Path`
-        The name or path of the configuration file (has to be in JSON format).
+        The name or path of the configuration file (has to be in JSON or YAML
+        format).
 
     Returns
     -------
@@ -47,8 +69,7 @@ def parse_config(fname):
         "templates_dir": "_templates",
         "copy": [],
     }
-    with open(fname) as config_file:
-        config.update(json.load(config_file))
+    config.update(parse_data_file(fname))
     config["ignore"].append(fname)
     return config
 
@@ -99,21 +120,25 @@ def crawl(root, ignore, copy_extra):
         containing lists of Paths that fall in each category.
 
     """
+    formats = {
+        ".md": "markdown",
+        ".json": "json",
+        ".yml": "yaml",
+        ".yaml": "yaml",
+        ".ipynb": "ipynb",
+    }
     tree = {
         "copy": [Path(path) for path in copy_extra],
         "markdown": [],
         "ipynb": [],
         "json": [],
+        "yaml": [],
     }
     for path in walk_non_hidden(root):
         if str(path) in ignore:
             continue
-        if path.suffix == ".md":
-            tree["markdown"].append(path)
-        elif path.suffix == ".json":
-            tree["json"].append(path)
-        elif path.suffix == ".ipynb":
-            tree["ipynb"].append(path)
+        if path.suffix in formats:
+            tree[formats[path.suffix]].append(path)
         else:
             tree["copy"].append(path)
     return tree
@@ -235,20 +260,19 @@ def load_jupyter_notebook(path):
     return page
 
 
-def load_json(path):
+def load_data(path):
     """
-    Read JSON  data from path.
+    Read JSON and YAML data from path.
 
     Parameters
     ----------
     path : :class:`pathlib.Path`
-        The path of the JSON file.
+        The path of the JSON or YAML data file.
 
     Returns
     -------
     data : dict
-        Dictionary with the file ID in ``"id"`` and the JSON data in
-        ``"json"``.
+        Dictionary with the file ID in ``"id"`` and the data in ``"content"``.
     """
     identifier = generate_identifier(path)
     data = {
@@ -256,8 +280,8 @@ def load_json(path):
         "type": "json",
         "parent": str(path.parent),
         "source": str(path),
-        "json": json.loads(path.read_text()),
     }
+    data["content"] = parse_data_file(path)
     return data
 
 

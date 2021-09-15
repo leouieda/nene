@@ -1,5 +1,5 @@
 ---
-title: Nene documetation
+title: Nēnē documentation
 template: base.html
 ---
 

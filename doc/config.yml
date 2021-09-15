@@ -1,0 +1,13 @@
+# Use YAML for configuration since it allows comments like this
+site_name: Nēnē
+description: A no-frills static site generator
+language: en
+repository: leouieda/nene
+menu:
+  - [About, /about]
+  - [Manual, /manual]
+  - [Install, /manual/install.html]
+ignore:
+  - README.md
+copy:
+  - .nojekyll

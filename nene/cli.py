@@ -15,7 +15,7 @@ import rich.console
 
 from .core import (
     crawl,
-    load_json,
+    load_data,
     load_jupyter_notebook,
     load_markdown,
     markdown_to_html,
@@ -84,6 +84,7 @@ def main(config, serve, verbose):
     console.print("Found:")
     console.print(f"   Markdown         = {len(tree['markdown'])}")
     console.print(f"   Jupyter notebook = {len(tree['ipynb'])}")
+    console.print(f"   YAML             = {len(tree['yaml'])}")
     console.print(f"   JSON             = {len(tree['json'])}")
     console.print(f"   Other            = {len(tree['copy'])}")
 
@@ -119,11 +120,11 @@ def main(config, serve, verbose):
         console.print("   There weren't any :disappointed:")
 
     console.print(":open_book: [b]Reading JSON data files:[/b]")
-    if tree["json"]:
+    if tree["json"] + tree["yaml"]:
         # Organizing data by parent folder makes it easier to apply it later
-        for path in tree["json"]:
+        for path in sorted(tree["json"] + tree["yaml"]):
             console.print(f"   {str(path)}")
-            datum = load_json(path)
+            datum = load_data(path)
             if datum["parent"] not in data:
                 data[datum["parent"]] = []
             data[datum["parent"]].append(datum)
@@ -137,7 +138,7 @@ def main(config, serve, verbose):
                 console.print(f"   {page['source']}:")
                 for datum in data[page["parent"]]:
                     console.print(f"     ↳ {datum['source']}")
-                    page.update(datum["json"])
+                    page.update(datum["content"])
     else:
         console.print("   There wasn't any :disappointed:")
 
