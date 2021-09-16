@@ -152,7 +152,7 @@ def main(config, serve, verbose):
     for page in site.values():
         console.print(f"   {page['path']} ← {page['template']}")
         template = jinja_env.get_template(page["template"])
-        rendered_html[page["path"]] = template.render(
+        rendered_html[page["id"]] = template.render(
             page=page, config=config, site=site
         )
 
@@ -167,11 +167,12 @@ def main(config, serve, verbose):
         shutil.copyfile(path, destination)
 
     console.print(f":writing_hand:  [b]Writing HTML files to '{str(output)}':[/b]")
-    for fname in rendered_html:
-        destination = output / Path(fname)
-        console.print(f"   {str(destination)}")
+    for identifier in rendered_html:
+        page = site[identifier]
+        destination = output / Path(page["path"])
+        console.print(f"   {str(destination)} ⇒  id: [bold green]{page['id']}[/]")
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(rendered_html[fname])
+        destination.write_text(rendered_html[identifier])
 
     console.print(":bar_chart: [b]Writing Jupyter Notebook image files:[/b]")
     if tree["ipynb"]:

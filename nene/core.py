@@ -190,7 +190,7 @@ def generate_identifier(path):
         String of ``/`` separated parents and stem of the path.
 
     """
-    identifier = "/".join([str(i) for i in path.parents] + [path.stem])
+    identifier = "/".join([str(i) for i in path.parts[:-1]] + [path.stem])
     return identifier
 
 
