@@ -3,12 +3,17 @@
 [![Latest release on PyPI](https://img.shields.io/pypi/v/nene.svg?style=flat-square)][pypi]
 [![Compatible Python versions](https://img.shields.io/pypi/pyversions/nene.svg?style=flat-square)][pypi]
 
+> Do you love <a href="https://github.com/getpelican">Pelican</a>?
+> Can't enough of that <a href="https://jekyllrb.com/">Jekyll</a>?
+> Then Nēnē is probably not for you.
+
 Static website generators seem to be the favourite pass time of developers
 procrastinating on other more important projects.
 So of course, I wanted to try making my own!
 
-> *Nēnē* continues the long tradition of naming static site generators built in
-> Python after birds (the nēnē is a [goose endemic to Hawai'i][nene-goose]).
+> **Trivia:** *Nēnē* continues the long tradition of naming static site
+> generators built in Python after birds (the nēnē is a
+> [goose endemic to Hawai'i][nene-goose]).
 
 ## Why build another one?
 

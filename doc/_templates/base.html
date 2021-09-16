@@ -1,43 +1,91 @@
 <!DOCTYPE html>
 <html lang="{{ config.language }}">
 
+{%- macro make_nav_link(name, id, page, site) %}
+  {% set aria = "" %}
+  {% set class = "nav-link" %}
+  {% if page.id == id %}
+    {% set class = class + " active" %}
+    {% set aria = 'aria-current="page"' %}
+  {% endif %}
+  <a class="{{ class }}" {{ aria }} href="/{{ site[id].path|replace('index.html', '') }}">{{ name }}</a>
+{%- endmacro %}
+
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ page.title|striptags|e }} | {{ config.site_name|striptags|e }}</title>
+
+  {%- if page.exclude_page_title is defined and page.exclude_page_title %}
+    {%- set title = config.site_name|striptags|e %}
+  {%- else %}
+    {%- set title = page.title|striptags|e + " | " + config.site_name|striptags|e %}
+  {%- endif %}
+  <title>{{ title }}</title>
+
+  {%- if config.favicon is defined %}
+  <link rel="shortcut icon" href="{{ favicon|e }}"/>
+  {%- endif %}
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/css/bootstrap-5.1/bootstrap.min.css">
+  <!-- FontAwsome icons -->
+  <link rel="stylesheet" href="/css/fontawesome/css/all.css">
+  <!-- Main CSS stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+
+  {%- block extrahead %}{% endblock %}
 </head>
 
 <body>
-  <header class="menu">
-    <div class="container">
-      <nav>
-        <ul class="nav justify-content-center">
-          <li class="nav-item ">
-            <a href="/">Home</a>
-          </li>
-          {%- for name, url in config.menu %}
+  <header class="shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light" aria-labelledby="primary-navigation">
+      <div class="container">
+        <a class="navbar-brand" href="/">{{ config.site_name }}</a>
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse"  id="navbarNav">
+          <ul class="navbar-nav flex-row flex-wrap">
+            {%- for name, id in config.menu %}
+              <li class="nav-item col-6 col-md-auto">
+                {{ make_nav_link(name, id, page, site) }}
+              </li>
+            {%- endfor %}
+          </ul>
+          <ul class="navbar-nav ms-md-auto">
             <li class="nav-item">
-              <a class="nav-link" href="{{ url }}">{{ name }}</a>
+              <a class="nav-link" aria-label="GitHub" href="https://github.com/{{ config.repository }}" target="_blank"><i class="fab fa-github fa-lg me-1" title="GitHub" aria-hidden="true"></i> GitHub</a>
             </li>
-          {%- endfor %}
-        </ul>
-      </nav>
-    </div>
+          </ul>
+        </div>
+      </div>
+    </nav>
   </header>
 
-  <div class="container page-content narrow">
+  <main>
+    {%- block content %}
+      <section class="container page-content">
+        <h1>{{ page.title }}</h1>
+        {{ page.body }}
+      </section>
+    {%- endblock %}
+  </main>
 
-    <h1>{{ page.title }}</h1>
+  <footer>
+    <div class="container">
+      <p>
+        Copyright &copy; 2021 {{ config.author }}
+      </p>
+    </div>
+  </footer>
 
-    {%- if page.flavor is defined %}
-        Favorite shave ice flavor: {{ page.flavor }}
-    {%- endif %}
-
-    {{ page.body }}
-
-  </div>
-
+  <!-- Bootstrap bundled Javascript (with their dependencies) -->
+  <script src="/js/bootstrap-5.1/bootstrap.bundle.min.js"
+    integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+    crossorigin="anonymous"></script>
 
 </body>
 </html>
-

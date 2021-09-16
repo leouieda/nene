@@ -5,9 +5,9 @@ author: Leonardo Uieda
 language: en
 repository: leouieda/nene
 menu:
-  - [About, /about]
-  - [Manual, /manual]
-  - [Install, /manual/install.html]
+  - [Home, index]
+  - [Install, install]
+  - [Use, manual/index]
 ignore:
   - README.md
   - config-alternative.json
