@@ -10,6 +10,12 @@ Can't enough of that <a href="https://jekyllrb.com/">Jekyll</a>?
 Then Nēnē is probably not for you.
 </p>
 
+When I say *no-frills*, I mean it. Nēnē has no built-in templates, no special
+provisions for blogging, plugins, or the sort of thing that would be useful if
+you just want to start a website.
+But it also tries to combine several nice features from other generators into
+something that will appeal to those who want to build their own templates.
+
 <div class="callout">
 
 **Trivia:** *Nēnē* continues the long tradition of naming static site
