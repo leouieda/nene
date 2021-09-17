@@ -1,0 +1,75 @@
+/* Styles for basic elements */
+h1 {
+  margin-bottom: 2rem;
+}
+
+h2 {
+  margin-bottom: 1.5rem;
+}
+
+p {
+  margin-bottom: 1.25rem;
+}
+
+li {
+  margin-bottom: 0.75rem;
+}
+
+pre {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: 0.1rem 0.2rem 0.2rem rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    background-color: var(--bs-gray-100);
+}
+
+footer {
+  margin-top: 5rem;
+  padding: 4rem 0;
+  background-color: var(--bs-gray-200);
+}
+
+header {
+  background-color: var(--bs-gray-100);
+}
+
+a {
+    color: #0a58ca;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #0a58ca;
+    text-decoration: underline;
+}
+
+
+/* Tweaks to Bootstrap classes */
+
+:root {
+  --bs-body-font-size: 1.1rem;
+}
+
+.container {
+  max-width: 980px;
+}
+
+li.nav-item {
+  margin-bottom: 0;
+}
+
+
+/* Custom classes */
+
+.page-content {
+  margin-top: 2.5rem;
+}
+
+.callout {
+    margin: 0 auto 1.5rem;
+    /* Set a tiny bottom padding because 0 causes it to ignore the p padding */
+    padding: 1rem 1rem 0.001rem;
+    border-left: 0.3rem solid var(--bs-yellow);
+    box-shadow: 0.1rem 0.2rem 0.2rem rgba(0, 0, 0, 0.1);
+    background-color: var(--bs-gray-100);
+}
