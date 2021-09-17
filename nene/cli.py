@@ -152,9 +152,7 @@ def main(config, serve, verbose):
     for page in site.values():
         console.print(f"   {page['path']} ← {page['template']}")
         template = jinja_env.get_template(page["template"])
-        rendered_html[page["id"]] = template.render(
-            page=page, config=config, site=site
-        )
+        rendered_html[page["id"]] = template.render(page=page, config=config, site=site)
 
     console.print(
         ":deciduous_tree: [b]Copying source directory tree and extra files to "
