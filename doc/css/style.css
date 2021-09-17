@@ -15,6 +15,10 @@ li {
   margin-bottom: 0.75rem;
 }
 
+img {
+  width: 100%;
+}
+
 pre {
     margin-bottom: 1rem;
     padding: 1rem;
@@ -34,13 +38,17 @@ header {
 }
 
 a {
-    color: #0a58ca;
-    text-decoration: none;
+  color: #0a58ca;
+  text-decoration: none;
 }
 
 a:hover {
-    color: #0a58ca;
-    text-decoration: underline;
+  color: #0a58ca;
+  text-decoration: underline;
+}
+
+code {
+  color: #dc1c2f;
 }
 
 
@@ -58,6 +66,11 @@ li.nav-item {
   margin-bottom: 0;
 }
 
+.navbar-brand img {
+  height: 1.8rem;
+  width: 1.8rem;
+  margin-right: 0.5rem;
+}
 
 /* Custom classes */
 

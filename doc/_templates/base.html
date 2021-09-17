@@ -15,15 +15,15 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  {%- if page.exclude_page_title is defined and page.exclude_page_title %}
-    {%- set title = config.site_name|striptags|e %}
+  {%- if page.custom_page_title is defined %}
+    {%- set title = page.custom_page_title|striptags|e %}
   {%- else %}
     {%- set title = page.title|striptags|e + " | " + config.site_name|striptags|e %}
   {%- endif %}
   <title>{{ title }}</title>
 
   {%- if config.favicon is defined %}
-  <link rel="shortcut icon" href="{{ favicon|e }}"/>
+  <link rel="shortcut icon" href="/{{ config.favicon|e }}"/>
   {%- endif %}
 
   <!-- Bootstrap CSS -->
@@ -39,15 +39,18 @@
 <body>
   <header class="shadow-sm">
     <nav class="navbar navbar-expand-lg navbar-light" aria-labelledby="primary-navigation">
-      <div class="container">
-        <a class="navbar-brand" href="/">{{ config.site_name }}</a>
+      <div class="container align-middle">
+        <a class="navbar-brand" href="/">
+          <img aria-hidden="true" alt="Project logo" src="/{{ config.logo }}">
+          {{ config.site_name }}
+        </a>
         <button class="navbar-toggler" type="button"
                 data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false"
                 aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse"  id="navbarNav">
+        <div class="collapse navbar-collapse align-middle"  id="navbarNav">
           <ul class="navbar-nav flex-row flex-wrap">
             {%- for name, id in config.menu %}
               <li class="nav-item col-6 col-md-auto">
@@ -68,7 +71,10 @@
   <main>
     {%- block content %}
       <section class="container page-content">
-        <h1>{{ page.title }}</h1>
+        {%- if page.exclude_h1 is defined and page.exclude_h1 %}
+        {%- else %}
+          <h1>{{ page.title }}</h1>
+        {%- endif %}
         {{ page.body }}
       </section>
     {%- endblock %}

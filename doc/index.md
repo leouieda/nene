@@ -1,14 +1,25 @@
 ---
-title: "Nēnē: A no-frills static site generator"
-exclude_page_title: true
+custom_page_title: "Nēnē: A no-frills static site generator"
+exclude_h1: true
 template: base.html
 ---
+
+<div class="row mb-3 align-items-center">
+<div class="col-md-9 col-sm-8 col-8">
+
+# {{ page.custom_page_title }}
 
 <p class="lead">
 Do you love <a href="https://github.com/getpelican">Pelican</a>?
 Can't enough of that <a href="https://jekyllrb.com/">Jekyll</a>?
 Then Nēnē is probably not for you.
 </p>
+
+</div>
+<div class="col-md-3 col-sm-4 col-4">
+  <img alt="Nēnē logo" src="/{{ config.logo }}">
+</div>
+</div>
 
 When I say *no-frills*, I mean it. Nēnē has no built-in templates, no special
 provisions for blogging, plugins, or the sort of thing that would be useful if
