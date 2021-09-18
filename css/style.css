@@ -79,10 +79,14 @@ li.nav-item {
 }
 
 .callout {
-    margin: 0 auto 1.5rem;
-    /* Set a tiny bottom padding because 0 causes it to ignore the p padding */
-    padding: 1rem 1rem 0.001rem;
-    border-left: 0.3rem solid var(--bs-yellow);
-    box-shadow: 0.1rem 0.2rem 0.2rem rgba(0, 0, 0, 0.1);
-    background-color: var(--bs-gray-100);
+  margin: 0 auto 1.5rem;
+  /* Set a tiny bottom padding because 0 causes it to ignore the p padding */
+  padding: 1rem 1rem 0.001rem;
+  border-left: 0.3rem solid var(--bs-yellow);
+  box-shadow: 0.1rem 0.2rem 0.2rem rgba(0, 0, 0, 0.1);
+  background-color: var(--bs-gray-100);
+}
+
+.callout-warning {
+  border-color: var(--bs-danger);
 }
