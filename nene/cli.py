@@ -96,6 +96,7 @@ def main(config, serve, verbose):
         loader=jinja2.FileSystemLoader(
             [config["templates_dir"], "."], followlinks=True
         ),
+        extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"],
     )
 
     site = {}
