@@ -37,7 +37,7 @@ Hawai'i][nene-goose]).
 
 ## Why build another one?
 
-Static website generators seem to be the favourite pass time of developers
+Static website generators seem to be the favourite pastime of developers
 procrastinating on other more important projects.
 So of course, I needed to try making my own!
 I also wanted to learn how to build command-line programs with [click][click]
