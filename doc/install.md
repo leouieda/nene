@@ -18,6 +18,17 @@ python -m pip install nene[jupyter]
 
 A conda-forge package may come in the future (or maybe not).
 
+<div class="callout callout-warning">
+
+<i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
+**WARNING!**
+<i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
+
+You probably want to pin Nēnē to a specific version since I will likely break
+compatibility between releases.
+
+</div>
+
 ## Dependencies
 
 Required:

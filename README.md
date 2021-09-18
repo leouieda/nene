@@ -27,6 +27,9 @@ Install instructions and other information can be found in the preliminary
 documentation website (built with Nēnē, of course):
 [nene.leouieda.com](https://nene.leouieda.com)
 
+**WARNING**: You probably want to pin Nēnē to a specific version since I will
+likely break compatibility between releases.
+
 ## License
 
 Nēnē is free and open-source software distributed under the
