@@ -7,7 +7,7 @@
 > Can't enough of that <a href="https://jekyllrb.com/">Jekyll</a>?
 > Then Nēnē is probably not for you.
 
-Static website generators seem to be the favourite pass time of developers
+Static website generators seem to be the favourite pastime of developers
 procrastinating on other more important projects.
 So of course, I had to make my own!
 
