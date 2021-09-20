@@ -139,7 +139,8 @@ def main(config, serve, verbose):
                 console.print(f"   {page['source']}:")
                 for datum in data[page["parent"]]:
                     console.print(f"     ↳ {datum['source']}")
-                    page.update(datum["content"])
+                    # Use | to make sure keys already in page aren't overwritten
+                    page.update(datum["content"] | page)
     else:
         console.print("   There wasn't any :disappointed:")
 
