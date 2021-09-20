@@ -83,6 +83,13 @@
   <footer>
     <div class="container">
       <p>
+        Last updated {{ build.today.strftime('%Y/%m/%d') }} from commit
+        <a href="https://github.com/{{ config.repository }}/commit/{{ build.commit }}"><code>{{ build.commit }}</code></a>
+      </p>
+      <p>
+        Built with <a href="https://nene.leouieda.com">Nēnē</a> {{ build.nene_version }}
+      </p>
+      <p>
         Copyright &copy; 2021 {{ config.author }}
       </p>
     </div>

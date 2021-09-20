@@ -7,9 +7,12 @@ Core functions used to parse inputs, generate HTML, etc.
 Should be independent of the command-line interface so they can be tested in
 isolation.
 """
+import contextlib
+import datetime
 import json
 import logging
 import os.path
+import subprocess
 from pathlib import Path
 
 import livereload
@@ -24,6 +27,33 @@ except ImportError:
     traitlets = None
     nbconvert = None
     nbformat = None
+
+
+from . import __version__ as nene_version
+
+
+def capture_build_info():
+    """
+    Create a dictionary with information about the build environment.
+
+    Returns
+    -------
+    build : dict
+        Dictionary with the captured information.
+    """
+    build = {
+        "today": datetime.datetime.utcnow(),
+        "nene_version": nene_version,
+    }
+    # Have to be careful if git isn't installed or if not running in a repository
+    with contextlib.suppress(Exception):
+        git_output = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True
+        )
+        commit = git_output.stdout.strip()
+        if commit:
+            build["commit"] = commit
+    return build
 
 
 def parse_data_file(path):
@@ -285,7 +315,7 @@ def load_data(path):
     return data
 
 
-def markdown_to_html(page, jinja_env, config, site):
+def markdown_to_html(page, jinja_env, config, site, build):
     """
     Convert Markdown to HTML.
 
@@ -303,6 +333,8 @@ def markdown_to_html(page, jinja_env, config, site):
         the file.
     site : dict
         Dictionary with the entire site content so far.
+    build : dict
+        Dictionary with information about the build environment.
 
     Returns
     -------
@@ -312,7 +344,7 @@ def markdown_to_html(page, jinja_env, config, site):
     """
     if page["source"].endswith(".md"):
         template = jinja_env.get_template(page["source"])
-        markdown = template.render(page=page, config=config, site=site)
+        markdown = template.render(page=page, config=config, site=site, build=build)
     else:
         markdown = page["markdown"]
     return myst_parser.main.to_html(markdown)

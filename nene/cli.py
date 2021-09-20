@@ -14,6 +14,7 @@ import jinja2
 import rich.console
 
 from .core import (
+    capture_build_info,
     crawl,
     load_data,
     load_jupyter_notebook,
@@ -77,6 +78,11 @@ def main(config, serve, verbose):
     config = parse_config(config_file)
     console.print(
         f":package: [b]Loaded configuration from '{config_file}':[/b]", config
+    )
+
+    build = capture_build_info()
+    console.print(
+        ":package: [b]Captured information about the build environment:[/b]", build
     )
 
     console.print(":open_file_folder: [b]Scanning source directory...[/b]", end=" ")
@@ -147,14 +153,16 @@ def main(config, serve, verbose):
     console.print(":butterfly: [b]Transforming Markdown to HTML:[/b]")
     for page in site.values():
         console.print(f"   {page['source']}")
-        page["body"] = markdown_to_html(page, jinja_env, config, site)
+        page["body"] = markdown_to_html(page, jinja_env, config, site, build)
 
     console.print(":art: [b]Rendering HTML output:[/b]")
     rendered_html = {}
     for page in site.values():
         console.print(f"   {page['path']} ← {page['template']}")
         template = jinja_env.get_template(page["template"])
-        rendered_html[page["id"]] = template.render(page=page, config=config, site=site)
+        rendered_html[page["id"]] = template.render(
+            page=page, config=config, site=site, build=build
+        )
 
     console.print(
         ":deciduous_tree: [b]Copying source directory tree and extra files to "
