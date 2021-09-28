@@ -27,6 +27,11 @@ Install instructions and other information can be found in the preliminary
 documentation website (built with Nēnē, of course):
 [nene.leouieda.com](https://nene.leouieda.com)
 
+Looking for an example? Checkout these websites built with Nēnē:
+
+* https://www.compgeolab.org (source code: https://github.com/compgeolab/website)
+* https://www.acarolcolombo.com (source code: https://github.com/acarolcolombo/website)
+
 **WARNING**: You probably want to pin Nēnē to a specific version since I will
 likely break compatibility between releases.
 
