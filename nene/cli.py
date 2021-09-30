@@ -145,8 +145,8 @@ def main(config, serve, verbose):
                 console.print(f"   {page['source']}:")
                 for datum in data[page["parent"]]:
                     console.print(f"     ↳ {datum['source']}")
-                    # Use | to make sure keys already in page aren't overwritten
-                    page.update(datum["content"] | page)
+                    # Merge the two data dictionaries with 'page' taking precedence
+                    page.update({**datum["content"], **page})
     else:
         console.print("   There wasn't any :disappointed:")
 
@@ -180,7 +180,7 @@ def main(config, serve, verbose):
         destination = output / Path(page["path"])
         console.print(f"   {str(destination)} ⇒  id: [bold green]{page['id']}[/]")
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(rendered_html[identifier])
+        destination.write_text(rendered_html[identifier], encoding="utf-8")
 
     console.print(":bar_chart: [b]Writing Jupyter Notebook image files:[/b]")
     if tree["ipynb"]:
