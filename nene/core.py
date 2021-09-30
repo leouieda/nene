@@ -343,7 +343,9 @@ def markdown_to_html(page, jinja_env, config, site, build):
 
     """
     if page["source"].endswith(".md"):
-        template = jinja_env.get_template(page["source"])
+        # Jinja doesn't allow \ as paths even on Windows
+        # https://github.com/pallets/jinja/issues/711
+        template = jinja_env.get_template(str(page["source"]).replace("\\", "/"))
         markdown = template.render(page=page, config=config, site=site, build=build)
     else:
         markdown = page["markdown"]
