@@ -180,7 +180,7 @@ def main(config, serve, verbose):
         destination = output / Path(page["path"])
         console.print(f"   {str(destination)} ⇒  id: [bold green]{page['id']}[/]")
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(rendered_html[identifier])
+        destination.write_text(rendered_html[identifier], encoding="utf-8")
 
     console.print(":bar_chart: [b]Writing Jupyter Notebook image files:[/b]")
     if tree["ipynb"]:
