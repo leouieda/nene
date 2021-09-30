@@ -73,7 +73,7 @@ def parse_data_file(path):
     path = Path(path)
     suffix = path.suffix
     loader = {".yml": yaml.safe_load, ".yaml": yaml.safe_load, ".json": json.loads}
-    data = loader[suffix](path.read_text())
+    data = loader[suffix](path.read_text(encoding="utf-8"))
     return data
 
 
@@ -246,7 +246,7 @@ def load_markdown(path):
         "path": str(path.with_suffix(".html")),
         "source": str(path),
     }
-    text = path.read_text()
+    text = path.read_text(encoding="utf-8")
     front_matter, markdown = text.split("---")[1:]
     page.update(yaml.safe_load(front_matter.strip()))
     page["markdown"] = markdown
@@ -277,7 +277,7 @@ def load_jupyter_notebook(path):
         "path": str(path.with_suffix(".html")),
         "source": str(path),
     }
-    notebook = nbformat.reads(path.read_text(), as_version=4)
+    notebook = nbformat.reads(path.read_text(encoding="utf-8"), as_version=4)
     image_dir = str(path.stem) + "_images"
     nbconfig = traitlets.config.Config()
     nbconfig.ExtractOutputPreprocessor.output_filename_template = os.path.join(
