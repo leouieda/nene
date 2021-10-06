@@ -43,13 +43,10 @@ So of course, I needed to try making my own!
 I also wanted to learn how to build command-line programs with [click][click]
 and [Rich][rich], so this seemed the perfect side project.
 
-I figured that it couldn't be that hard to build something with modern Python
-tools that had all of these things. And for once it actually wasn't!
-
 ## What Nēnē has to offer
 
-Nēnē implements several features that I like from different static site
-generators:
+Nēnē was designed to embody several features that I like from different static
+site generators:
 
 * **No-frills:** There are no fancy built-in templates, blogging support, RSS
   feeds, etc. You have to roll your own templates.
