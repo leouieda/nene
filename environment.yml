@@ -1,3 +1,4 @@
+# Set up a Nene development environment using the conda package manager
 name: nene
 channels:
   - conda-forge
