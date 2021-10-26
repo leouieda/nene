@@ -246,8 +246,8 @@ def load_markdown(path):
         "path": str(path.with_suffix(".html")),
         "source": str(path),
     }
-    text = path.read_text(encoding="utf-8")
-    front_matter, markdown = text.split("---")[1:]
+    text = path.read_text(encoding="utf-8").strip()
+    _, front_matter, markdown = text.split("---", maxsplit=2)
     page.update(yaml.safe_load(front_matter.strip()))
     page["markdown"] = markdown
     return page
