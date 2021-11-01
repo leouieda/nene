@@ -69,7 +69,7 @@ def make_console(verbose):
 @click.version_option()
 def main(config, serve, verbose):
     """
-    Nēnē: A no-frills static site generator.
+    Nene: A no-frills static site generator.
 
     Builds a static HTML website from sources, templates, and configuration
     found in the current directory.
