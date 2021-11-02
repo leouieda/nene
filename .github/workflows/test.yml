@@ -98,3 +98,17 @@ jobs:
 
       - name: Build the documentation
         run: cd doc && nene
+
+      - name: Build the documentation (Windows CMD)
+        if: matrix.os == 'windows'
+        run: |
+          cd doc
+          nene
+        shell: cmd
+
+      - name: Build the documentation (Powershell)
+        if: matrix.os == 'windows'
+        run: |
+          cd doc
+          nene
+        shell: pwsh
