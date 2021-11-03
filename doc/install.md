@@ -16,7 +16,11 @@ install the extra dependencies:
 python -m pip install nene[jupyter]
 ```
 
-A conda-forge package may come in the future (or maybe not).
+A conda-forge package is also available so you can use `conda` or `mamba`:
+
+```bash
+conda install nene -c conda-forge
+```
 
 <div class="callout callout-warning">
 
@@ -24,8 +28,8 @@ A conda-forge package may come in the future (or maybe not).
 **WARNING!**
 <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
 
-You probably want to pin Nēnē to a specific version since I will likely break
-compatibility between releases.
+You probably want to pin Nēnē to a minor version since I will likely break
+compatibility between releases. For example, `nene==0.3.*`.
 
 </div>
 
