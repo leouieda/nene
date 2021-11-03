@@ -77,13 +77,15 @@
 install the extra dependencies:</p>
 <pre><code class="language-bash">python -m pip install nene[jupyter]
 </code></pre>
-<p>A conda-forge package may come in the future (or maybe not).</p>
+<p>A conda-forge package is also available so you can use <code>conda</code> or <code>mamba</code>:</p>
+<pre><code class="language-bash">conda install nene -c conda-forge
+</code></pre>
 <div class="callout callout-warning">
 <p><i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
 <strong>WARNING!</strong>
 <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i></p>
-<p>You probably want to pin Nēnē to a specific version since I will likely break
-compatibility between releases.</p>
+<p>You probably want to pin Nēnē to a minor version since I will likely break
+compatibility between releases. For example, <code>nene==0.3.*</code>.</p>
 </div>
 <h2>Dependencies</h2>
 <p>Required:</p>
@@ -107,11 +109,11 @@ compatibility between releases.</p>
   <footer>
     <div class="container">
       <p>
-        Last updated 2021/11/02 from commit
-        <a href="https://github.com/leouieda/nene/commit/713508d"><code>713508d</code></a>
+        Last updated 2021/11/03 from commit
+        <a href="https://github.com/leouieda/nene/commit/322f83c"><code>322f83c</code></a>
       </p>
       <p>
-        Built with <a href="https://nene.leouieda.com">Nēnē</a> v0.3.2
+        Built with <a href="https://nene.leouieda.com">Nēnē</a> v0.3.2.post1+g322f83c
       </p>
       <p>
         Copyright &copy; 2021 Leonardo Uieda
