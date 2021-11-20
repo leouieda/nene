@@ -1,6 +1,8 @@
 # Use YAML for configuration since it allows comments like this
 site_name: Nēnē
-description: A no-frills static site generator
+description: |
+  Do you love Pelican? Can't enough of that Jekyll? Then Nēnē is probably not
+  for you.
 author: Leonardo Uieda
 language: en
 repository: leouieda/nene

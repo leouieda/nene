@@ -33,21 +33,16 @@
     {% set thumbnail = config.thumbnail %}
   {%- endif -%}
   {%- if page.description is defined -%}
-    {% set description = page.description %}
+    {% set description = page.description|striptags %}
   {%- else -%}
-    {% set description = config.description %}
-  {%- endif -%}
-  {%- if page.title is defined -%}
-    {% set page_title = page.title %}
-  {%- else -%}
-    {% set page_title = config.site_name ~ ": " ~ config.description %}
+    {% set description = config.description|striptags %}
   {%- endif %}
   <!-- Twitter -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:site" content="@{{ config.twitter }}">
   <meta name="twitter:creator" content="@{{ config.twitter }}">
   <!-- OpenGraph -->
-  <meta property="og:title" content="{{ page_title }}" />
+  <meta property="og:title" content="{{ title }}" />
   <meta property="og:description" content="{{ description }}" />
   <meta property="og:image" content="{{ config.url }}/{{ thumbnail }}" />
   <meta property="og:url" content="{{ config.url }}/{{ page.path }}" />
