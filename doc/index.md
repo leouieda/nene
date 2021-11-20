@@ -11,7 +11,7 @@ template: base.html
 
 <p class="lead">
 Do you love <a href="https://github.com/getpelican">Pelican</a>?
-Can't enough of that <a href="https://jekyllrb.com/">Jekyll</a>?
+Can't get enough of that <a href="https://jekyllrb.com/">Jekyll</a>?
 Then Nēnē is probably not for you.
 </p>
 

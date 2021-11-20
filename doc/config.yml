@@ -4,8 +4,10 @@ description: A no-frills static site generator
 author: Leonardo Uieda
 language: en
 repository: leouieda/nene
+url: https://nene.leouieda.com
 favicon: images/favicon.png
 logo: images/nene-logo.svg
+thumbnail: images/thumbnail/default.png
 menu:
   - [Home, index]
   - [Install, install]
