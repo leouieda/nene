@@ -42,6 +42,10 @@
   {%- else -%}
     {% set page_title = config.site_name ~ ": " ~ config.description %}
   {%- endif %}
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@{{ config.twitter }}">
+  <meta name="twitter:creator" content="@{{ config.twitter }}">
   <!-- OpenGraph -->
   <meta property="og:title" content="{{ page_title }}" />
   <meta property="og:description" content="{{ description }}" />
