@@ -1,7 +1,13 @@
 # Specify that we use setuptools and setuptools_scm (to generate the version
 # string). Actual configuration is in setup.py and setup.cfg.
 [build-system]
-requires = ["setuptools>=30.3.0", "wheel", "setuptools_scm"]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_scheme =  "post-release"
+local_scheme =  "node-and-date"
+write_to =  "nene/_version.py"
 
 # Make sure isort and Black are compatible
 [tool.isort]

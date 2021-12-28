@@ -1,0 +1,5 @@
+# Build source and wheel distributions
+setuptools>=45
+setuptools_scm>=6.2
+wheel
+build

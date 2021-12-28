@@ -1,8 +1,10 @@
 # Build, package, test, and clean
 PROJECT=nene
 
-install:
-	pip install --no-deps -e .
+.PHONY: build
+
+build:
+	python -m build .
 
 test:
 	pytest $(PYTEST_ARGS) $(PROJECT)
@@ -33,4 +35,4 @@ clean:
 	find . -name "*.pyc" -exec rm -v {} \;
 	find . -name "*.orig" -exec rm -v {} \;
 	find . -name ".coverage.*" -exec rm -v {} \;
-	rm -rvf build dist MANIFEST *.egg-info __pycache__ .coverage .cache .pytest_cache $(PROJECT)/_version.py
+	rm -rvf build dist MANIFEST .eggs *.egg-info __pycache__ .coverage .cache .pytest_cache $(PROJECT)/_version.py
