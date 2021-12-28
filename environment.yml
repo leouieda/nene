@@ -8,4 +8,7 @@ dependencies:
   - pip
   - make
   - pip:
-    - -e .[jupyter,dev,lint]
+    - -r env/requirements-build.txt
+    - -r env/requirements-style.txt
+    - -r env/requirements-test.txt
+    - -e .[jupyter]
