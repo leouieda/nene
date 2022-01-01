@@ -1,6 +1,7 @@
 # Nēnē: A no-frills static site generator
 
 [![Latest release on PyPI](https://img.shields.io/pypi/v/nene.svg?style=flat-square)][pypi]
+[![Latest release on conda-forge](https://img.shields.io/conda/vn/conda-forge/nene.svg?style=flat-square)][conda-forge]
 [![Compatible Python versions](https://img.shields.io/pypi/pyversions/nene.svg?style=flat-square)][pypi]
 
 > Do you love <a href="https://github.com/getpelican">Pelican</a>?
@@ -44,3 +45,4 @@ Nēnē is free and open-source software distributed under the
 
 [nene-goose]: https://www.nps.gov/havo/learn/nature/nene.htm
 [pypi]: https://pypi.org/project/nene/
+[conda-forge]: https://github.com/conda-forge/nene-feedstock
