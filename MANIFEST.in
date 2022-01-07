@@ -4,7 +4,6 @@ prune .github
 prune doc
 prune env
 prune logo
-prune tools
 exclude .gitignore
 exclude Makefile
 exclude environment.yml
