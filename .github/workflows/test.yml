@@ -86,9 +86,9 @@ jobs:
           echo
           echo "Capturing run-time dependencies:"
           if [[ "${{ matrix.dependencies }}" == "oldest" ]]; then
-            dependente --source install --oldest > requirements-full.txt
+            dependente --source install,extras --oldest > requirements-full.txt
           else
-            dependente --source install > requirements-full.txt
+            dependente --source install,extras > requirements-full.txt
           fi
           echo "Capturing dependencies from:"
           for requirement in $REQUIREMENTS
