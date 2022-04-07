@@ -12,9 +12,6 @@ from pathlib import Path
 
 import click
 import jinja2
-import rich.console
-import rich.highlighter
-import rich.pretty
 
 from .core import (
     capture_build_info,
@@ -26,21 +23,10 @@ from .core import (
     parse_config,
     serve_and_watch,
 )
+from .printing import make_console, print_dict
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 DEFAULT_CONFIG = "config.yml"
-
-
-def make_console(verbose):
-    """
-    Start up the :class:`rich.console.Console` instance we'll use.
-
-    Parameters
-    ----------
-    verbose : bool
-        Whether or not to print status messages to stderr.
-    """
-    return rich.console.Console(stderr=True, quiet=not verbose, highlight=False)
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
@@ -76,7 +62,6 @@ def main(config, serve, verbose):
     """
     config_file = config
     console = make_console(verbose)
-    console_error = make_console(verbose=True)
     style = "bold blue"
     console.rule(
         ":palm_tree: Lay back and relax while Nēnē builds your website :palm_tree:",
@@ -85,6 +70,7 @@ def main(config, serve, verbose):
     try:
         output, tree, config = build(config_file, console, style)
     except Exception:
+        console_error = make_console(verbose=True)
         style = "bold red"
         console.print()
         console.rule(":fire: Error messages start here :fire:", style=style)
@@ -169,12 +155,13 @@ def build(config_file, console, style):
             ":package: Captured information about the build environment:", style=style
         )
         build = capture_build_info()
-        for key in sorted(build):
-            console.print(f"   {key}: {build[key]}", highlight=False)
+        print_dict(build, console)
 
-        console.print(":package: Configuration loaded from:", style=style)
+        console.print(
+            f":package: Configuration loaded from '{config_file}':", style=style
+        )
         config = parse_config(config_file)
-        console.print(f"   {config_file}", highlight=False)
+        print_dict(config, console)
 
         console.print(":open_file_folder: Scanned source directory:", style=style)
         tree = crawl(root=Path("."), ignore=config["ignore"], copy_extra=config["copy"])
