@@ -23,7 +23,7 @@ from .core import (
     parse_config,
     serve_and_watch,
 )
-from .printing import make_console, print_dict
+from .printing import make_console, print_dict, print_file_stats
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 DEFAULT_CONFIG = "config.yml"
@@ -165,11 +165,7 @@ def build(config_file, console, style):
 
         console.print(":open_file_folder: Scanned source directory:", style=style)
         tree = crawl(root=Path("."), ignore=config["ignore"], copy_extra=config["copy"])
-        console.print(f"   Markdown = {len(tree['markdown'])}")
-        console.print(f"    Jupyter = {len(tree['ipynb'])}")
-        console.print(f"       YAML = {len(tree['yaml'])}")
-        console.print(f"       JSON = {len(tree['json'])}")
-        console.print(f"      Other = {len(tree['copy'])}")
+        print_file_stats(tree, console)
 
         output = Path(config["output_dir"])
         output.mkdir(exist_ok=True)
