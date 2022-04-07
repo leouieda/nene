@@ -6,24 +6,19 @@ Defines the command line interface.
 
 Uses click to define a CLI around the ``main`` function.
 """
+import logging
 import shutil
 import sys
 from pathlib import Path
 
 import click
-import jinja2
+import livereload
 
-from .core import (
-    capture_build_info,
-    crawl,
-    load_data,
-    load_jupyter_notebook,
-    load_markdown,
-    markdown_to_html,
-    parse_config,
-    serve_and_watch,
-)
+from .crawling import crawl
+from .parsing import load_config, load_data, load_jupyter_notebook, load_markdown
 from .printing import make_console, print_dict, print_file_stats
+from .rendering import make_jinja_env, markdown_to_html
+from .utils import capture_build_info
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 DEFAULT_CONFIG = "config.yml"
@@ -160,7 +155,7 @@ def build(config_file, console, style):
         console.print(
             f":package: Configuration loaded from '{config_file}':", style=style
         )
-        config = parse_config(config_file)
+        config = load_config(config_file)
         print_dict(config, console)
 
         console.print(":open_file_folder: Scanned source directory:", style=style)
@@ -170,13 +165,7 @@ def build(config_file, console, style):
         output = Path(config["output_dir"])
         output.mkdir(exist_ok=True)
 
-        # Need to add the current dir so we can use the Markdown files as templates
-        jinja_env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(
-                [config["templates_dir"], "."], followlinks=True
-            ),
-            extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"],
-        )
+        jinja_env = make_jinja_env(config["templates_dir"])
 
         site = {}
         data = {}
@@ -273,3 +262,34 @@ def build(config_file, console, style):
         else:
             console.print("   There weren't any :disappointed:")
     return output, tree, config
+
+
+def serve_and_watch(path, config_file, watch, extra, quiet):
+    """
+    Serve the output folder with livereload and watch the tree and extra files.
+
+    Parameters
+    ----------
+    path : str or :class:`pathlib.Path`
+        The path that will be served.
+    config_file : str or :class:`pathlib.Path`
+        The configuration file used.
+    watch : dict
+        Dictionary with lists of source files that will be watched for changes.
+        Usually the output of :func:`nene.core.crawl`.
+    extra : list
+        List of extra files to watch.
+    quiet: bool
+        If True, will set logging output from livereload only at "ERROR" level.
+
+    """
+    if quiet:
+        logger = logging.getLogger("livereload")
+        logger.setLevel("ERROR")
+    server = livereload.Server()
+    files = list(extra)
+    for category in watch:
+        files.extend(watch[category])
+    for filename in files:
+        server.watch(filename, f"nene --config={config_file} --quiet")
+    server.serve(root=path, host="localhost", open_url_delay=1)
