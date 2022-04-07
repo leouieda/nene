@@ -17,7 +17,7 @@ import livereload
 from .crawling import crawl
 from .parsing import load_config, load_data, load_jupyter_notebook, load_markdown
 from .printing import make_console, print_dict, print_file_stats
-from .rendering import make_jinja_env, markdown_to_html
+from .rendering import make_jinja_env, render_html, render_markdown
 from .utils import capture_build_info
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
@@ -214,18 +214,17 @@ def build(config_file, console, style):
         else:
             console.print("   There wasn't any :disappointed:")
 
-        console.print(":butterfly: Transforming Markdown to HTML:", style=style)
+        console.print(":art: Rendering templates in Markdown content:", style=style)
         for page in site.values():
-            console.print(f"   {page['source']}")
-            page["body"] = markdown_to_html(page, jinja_env, config, site, build)
+            console.print(f"   {page['id']}")
+            page["markdown"] = render_markdown(page, config, site, build, jinja_env)
 
-        console.print(":art: Rendering HTML output:", style=style)
+        console.print(":art: Rendering templates for HTML output:", style=style)
         rendered_html = {}
         for page in site.values():
-            console.print(f"   {page['path']} ← {page['template']}")
-            template = jinja_env.get_template(page["template"])
-            rendered_html[page["id"]] = template.render(
-                page=page, config=config, site=site, build=build
+            console.print(f"   {page['id']} ← {page['template']}")
+            rendered_html[page["id"]] = render_html(
+                page, config, site, build, jinja_env
             )
 
         console.print(

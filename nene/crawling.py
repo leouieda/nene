@@ -5,7 +5,7 @@
 from pathlib import Path
 
 
-def walk_non_hidden(root, hidden_start=(".", "_")):
+def _walk_non_hidden(root, hidden_start=(".", "_")):
     """
     Walk a directory tree while ignoring paths that start with some markers.
 
@@ -24,7 +24,7 @@ def walk_non_hidden(root, hidden_start=(".", "_")):
     for path in Path(root).glob("*"):
         if not any(path.name.startswith(hidden) for hidden in hidden_start):
             if path.is_dir():
-                yield from walk_non_hidden(path, hidden_start)
+                yield from _walk_non_hidden(path, hidden_start)
             else:
                 yield path
 
@@ -65,7 +65,7 @@ def crawl(root, ignore, copy_extra):
         "json": [],
         "yaml": [],
     }
-    for path in walk_non_hidden(root):
+    for path in _walk_non_hidden(root):
         if str(path) in ignore:
             continue
         if path.suffix in formats:
