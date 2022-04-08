@@ -2,8 +2,8 @@
 # Distributed under the terms of the MIT License.
 # SPDX-License-Identifier: MIT
 """Find files by crawling a directory tree."""
-from pathlib import Path
 from glob import glob
+from pathlib import Path
 
 
 def walk_non_hidden(root, hidden_start=(".", "_")):
