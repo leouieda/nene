@@ -35,4 +35,4 @@ clean:
 	find . -name "*.pyc" -exec rm -v {} \;
 	find . -name "*.orig" -exec rm -v {} \;
 	find . -name ".coverage.*" -exec rm -v {} \;
-	rm -rvf build dist MANIFEST .eggs *.egg-info __pycache__ .coverage .cache .pytest_cache $(PROJECT)/_version.py
+	rm -rvf build dist MANIFEST .eggs *.egg-info __pycache__ .coverage .cache .pytest_cache $(PROJECT)/_version_generated.py
