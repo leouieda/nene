@@ -68,10 +68,7 @@ def crawl(root, ignore, copy_extra):
     }
     expanded_ignore = []
     for path in ignore:
-        if "*" in path:
-            expanded_ignore.extend(glob(path, recursive=True))
-        else:
-            expanded_ignore.append(path)
+        expanded_ignore.extend(glob(path, recursive=True))
     for path in _walk_non_hidden(root):
         if str(path) in expanded_ignore:
             continue
