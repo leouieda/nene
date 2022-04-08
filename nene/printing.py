@@ -6,7 +6,7 @@
 import rich.console
 
 
-def make_console(verbose):
+def make_console(verbose, style="bold blue"):
     """
     Start up the :class:`rich.console.Console` instance we'll use.
 
@@ -15,7 +15,8 @@ def make_console(verbose):
     verbose : bool
         Whether or not to print status messages to stderr.
     """
-    return rich.console.Console(stderr=True, quiet=not verbose, highlight=False)
+    console = rich.console.Console(stderr=True, quiet=not verbose, highlight=False)
+    return console, style
 
 
 def print_dict(dictionary, console):

@@ -62,6 +62,7 @@ def load_config(fname):
         "output_dir": "_build",
         "templates_dir": "_templates",
         "copy": [],
+        "config_file": str(fname),
     }
     config.update(_read_data_file(fname))
     config["ignore"].append(fname)

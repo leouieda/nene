@@ -6,7 +6,7 @@ import contextlib
 import datetime
 import subprocess
 
-from . import __version__ as nene_version
+from ._version import __version__ as nene_version
 
 
 def generate_identifier(path):

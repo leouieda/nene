@@ -2,13 +2,7 @@
 # Distributed under the terms of the MIT License.
 # SPDX-License-Identifier: MIT
 """
-Nēnē: A no-nonsense static site generator.
-
-See:
-
-* nene.cli: the command-line application.
-* nene.core: functions for building, parsing, converting, etc.
+Nēnē: A no-frills static site generator.
 """
-from . import _version
-
-__version__ = f"v{_version.version}"
+from ._api import build, export, serve
+from ._version import __version__

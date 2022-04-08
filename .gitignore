@@ -5,6 +5,6 @@ build/
 .eggs
 *.egg-info
 **/__pycache__
-**/_version.py
+**/_version_generated.py
 **/_build
 **/.ipynb_checkpoints
