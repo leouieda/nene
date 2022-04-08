@@ -28,19 +28,14 @@ def make_jinja_env(templates_dir):
     return env
 
 
-def markdown_to_html(page, jinja_env, config, site, build):
+def render_markdown(page, config, site, build, jinja_env):
     """
-    Convert Markdown to HTML.
-
-    Renders templating constructs in Markdown sources (only if the source file
-    is .md).
+    Render the templates in Markdown content of the page.
 
     Parameters
     ----------
     page : dict
         Dictionary with the parsed YAML front-matter and Markdown body.
-    jinja_env
-        A Jinja2 environment for loading templates.
     config : dict
         A dictionary with the default configuration and variables loaded from
         the file.
@@ -48,6 +43,38 @@ def markdown_to_html(page, jinja_env, config, site, build):
         Dictionary with the entire site content so far.
     build : dict
         Dictionary with information about the build environment.
+    jinja_env
+        A Jinja2 environment for loading templates.
+
+    Returns
+    -------
+    markdown : str
+        The rendered Markdown content for the page.
+    """
+    # Jinja doesn't allow \ as paths even on Windows
+    # https://github.com/pallets/jinja/issues/711
+    template = jinja_env.get_template(str(page["source"]).replace("\\", "/"))
+    markdown = template.render(page=page, config=config, site=site, build=build)
+    return markdown
+
+
+def render_html(page, config, site, build, jinja_env):
+    """
+    Render the full HTML for a page, including conversion of Markdown to HTML.
+
+    Parameters
+    ----------
+    page : dict
+        Dictionary with the parsed YAML front-matter and Markdown body.
+    config : dict
+        A dictionary with the default configuration and variables loaded from
+        the file.
+    site : dict
+        Dictionary with the entire site content so far.
+    build : dict
+        Dictionary with information about the build environment.
+    jinja_env
+        A Jinja2 environment for loading templates.
 
     Returns
     -------
@@ -55,11 +82,7 @@ def markdown_to_html(page, jinja_env, config, site, build):
         The converted HTML.
 
     """
-    if page["source"].endswith(".md"):
-        # Jinja doesn't allow \ as paths even on Windows
-        # https://github.com/pallets/jinja/issues/711
-        template = jinja_env.get_template(str(page["source"]).replace("\\", "/"))
-        markdown = template.render(page=page, config=config, site=site, build=build)
-    else:
-        markdown = page["markdown"]
-    return myst_parser.main.to_html(markdown)
+    page["body"] = myst_parser.main.to_html(page["markdown"])
+    template = jinja_env.get_template(page["template"])
+    html = template.render(page=page, config=config, site=site, build=build)
+    return html
