@@ -87,29 +87,19 @@ def build(config_file, console=None, style=""):
     else:
         console.print("   None found.")
 
-    console.print(":open_book: Reading JSON and YAML data files:", style=style)
-    data = {}
+    console.print(
+        ":open_book: Reading data files and propagating to pages:", style=style
+    )
     data_files = source_files["json"] + source_files["yaml"]
     if data_files:
-        # Organizing data by parent folder makes it easier to apply it later
         for path in sorted(data_files):
             console.print(f"   {str(path)}")
-            datum = load_data(path)
-            if datum["parent"] not in data:
-                data[datum["parent"]] = []
-            data[datum["parent"]].append(datum)
-    else:
-        console.print("   None found.")
-
-    console.print(":truck: Propagating data through the website:", style=style)
-    if data:
-        for page in site.values():
-            if page["parent"] in data:
-                console.print(f"   {page['source']}:")
-                for datum in data[page["parent"]]:
-                    console.print(f"     ↳ {datum['source']}")
+            data = load_data(path)
+            for page in site.values():
+                if page["parent"] == data["parent"]:
+                    console.print(f"     ↳ {page['id']}")
                     # Merge the two data dictionaries with 'page' taking precedence
-                    page.update({**datum["content"], **page})
+                    page.update({**data["content"], **page})
     else:
         console.print("   None found.")
 
