@@ -28,6 +28,25 @@ def make_jinja_env(templates_dir):
     return env
 
 
+def markdown_to_html(page):
+    """
+    Convert the Markdown content of a page to HTML.
+
+    Parameters
+    ----------
+    page : dict
+        Dictionary with the parsed YAML front-matter and Markdown body.
+
+    Returns
+    -------
+    html : str
+        The converted HTML.
+
+    """
+    html = myst_parser.main.to_html(page["markdown"])
+    return html
+
+
 def render_markdown(page, config, site, build, jinja_env):
     """
     Render the templates in Markdown content of the page.
@@ -58,14 +77,15 @@ def render_markdown(page, config, site, build, jinja_env):
     return markdown
 
 
-def render_html(page, config, site, build, jinja_env):
+def render_output(page, config, site, build, jinja_env):
     """
-    Render the full HTML for a page, including conversion of Markdown to HTML.
+    Render the full template output for a page.
 
     Parameters
     ----------
     page : dict
-        Dictionary with the parsed YAML front-matter and Markdown body.
+        Dictionary with the page metadata and body content (in HTML not just
+        Markdown).
     config : dict
         A dictionary with the default configuration and variables loaded from
         the file.
@@ -82,7 +102,6 @@ def render_html(page, config, site, build, jinja_env):
         The converted HTML.
 
     """
-    page["body"] = myst_parser.main.to_html(page["markdown"])
     template = jinja_env.get_template(page["template"])
     html = template.render(page=page, config=config, site=site, build=build)
     return html
