@@ -17,10 +17,10 @@ from .utils import capture_build_info
 
 def build(config_file, console=None, style=""):
     """
-    Build the website from the sources.
+    Build the website structure from the sources.
 
-    Reads in configuration and data sources. Renders templates and generates
-    the outputs (generally HTML) in memory.
+    Reads in configuration, page sources, and data sources. Structures the
+    content into dictionaries and prepares the website for rendering.
 
     Parameters
     ----------
@@ -37,11 +37,14 @@ def build(config_file, console=None, style=""):
     site : dict
         The generated website as a dictionary of pages. Each page has a unique
         ID (usually the relative file path without extension) and is a
-        dictionary. The rendered HTML of the page is in ``page["html"]``.
+        dictionary.
     source_files : dict
         Dictionary with lists of source files by file type.
     config : dict
         Parameters read from the main configuration file.
+    build: dict
+        Information about the current build (version of Nēnē, git commit, date,
+        etc).
     """
     if console is None:
         console, style = make_console(verbose=False)
@@ -49,8 +52,8 @@ def build(config_file, console=None, style=""):
     console.print(
         ":package: Captured information about the build environment:", style=style
     )
-    build = capture_build_info()
-    print_dict(build, console)
+    build_info = capture_build_info()
+    print_dict(build_info, console)
 
     console.print(f":package: Configuration loaded from '{config_file}':", style=style)
     config = load_config(config_file)
@@ -110,6 +113,40 @@ def build(config_file, console=None, style=""):
     else:
         console.print("   None found.")
 
+    return site, source_files, config, build_info
+
+
+def render(site, config, build, console=None, style=""):
+    """
+    Render the HTML or other outputs from the assembled website sources.
+
+    The ``site``, ``config``, and ``build`` variables are passed to the Jinja2
+    template for rendering both the Markdown (first) and the HTML (second).
+
+    Modifies the pages in ``site`` **in place** to add the rendered HTML of
+    each page.
+
+    Parameters
+    ----------
+    site : dict
+        The generated website as a dictionary of pages. Each page has a unique
+        ID (usually the relative file path without extension) and is a
+        dictionary. The rendered HTML of each page is added to ``page["html"]``
+        **in place**..
+    config : dict
+        Parameters read from the main configuration file.
+    build: dict
+        Information about the current build (version of Nēnē, git commit, date,
+        etc).
+    console : rich.console.Console
+        Console used to print status messaged. If None, no messages are
+        printed.
+    style : str
+        Style string used to format console status messages.
+    """
+    if console is None:
+        console, style = make_console(verbose=False)
+
     jinja_env = make_jinja_env(config["templates_dir"])
 
     console.print(":art: Rendering templates in Markdown content:", style=style)
@@ -121,8 +158,6 @@ def build(config_file, console=None, style=""):
     for page in site.values():
         console.print(f"   {page['path']} ← {page['template']}")
         page["html"] = render_html(page, config, site, build, jinja_env)
-
-    return site, source_files, config
 
 
 def export(site, files_to_copy, output_dir, console=None, style=""):

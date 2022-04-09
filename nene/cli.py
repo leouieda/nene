@@ -55,7 +55,8 @@ def main(config, serve, verbose):
     # Main website building section
     try:
         with console.status(f"[{style}]Working...[/{style}]"):
-            site, source_files, config = _api.build(config_file, console, style)
+            site, source_files, config, build = _api.build(config_file, console, style)
+            _api.render(site, config, build, console, style)
             _api.export(
                 site, source_files["copy"], config["output_dir"], console, style
             )

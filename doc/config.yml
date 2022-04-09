@@ -18,3 +18,4 @@ menu:
 ignore:
   - README.md
   - config-alternative.json
+  - "*.py"
