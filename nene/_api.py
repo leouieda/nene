@@ -2,6 +2,7 @@
 # Distributed under the terms of the MIT License.
 # SPDX-License-Identifier: MIT
 """Public functions used for building and serving the website."""
+import itertools
 import logging
 import shutil
 from pathlib import Path
@@ -11,7 +12,7 @@ import livereload
 from .crawling import crawl
 from .parsing import load_config, load_data, load_jupyter_notebook, load_markdown
 from .printing import make_console, print_dict, print_file_stats
-from .rendering import make_jinja_env, render_html, render_markdown
+from .rendering import make_jinja_env, markdown_to_html, render_markdown, render_output
 from .utils import capture_build_info
 
 
@@ -103,6 +104,24 @@ def build(config_file, console=None, style=""):
     else:
         console.print("   None found.")
 
+    def get_parent(item):
+        """Return the name of the parent of a page for the groupby."""
+        page = item[1]
+        return page["parent"]
+
+    console.print(":baby: Adding information on sibling pages:", style=style)
+    grouped = itertools.groupby(sorted(site.items(), key=get_parent), key=get_parent)
+    for parent, group in grouped:
+        if parent == ".":
+            console.print("   . (base)")
+        else:
+            console.print(f"   {parent}")
+        # The groups are also (key, value) pairs like dict.items().
+        siblings = {key for key, value in group}
+        for page_id in siblings:
+            console.print(f"     ↳ {page_id}")
+            site[page_id]["siblings"] = [site[i] for i in (siblings - {page_id})]
+
     return site, source_files, config, build_info
 
 
@@ -111,9 +130,9 @@ def render(site, config, build, console=None, style=""):
     Render the HTML or other outputs from the assembled website sources.
 
     The ``site``, ``config``, and ``build`` variables are passed to the Jinja2
-    template for rendering both the Markdown (first) and the HTML (second).
+    template for rendering the final outputs.
 
-    Modifies the pages in ``site`` **in place** to add the rendered HTML of
+    Modifies the pages in ``site`` **in place** to add the rendered output of
     each page.
 
     Parameters
@@ -121,8 +140,8 @@ def render(site, config, build, console=None, style=""):
     site : dict
         The generated website as a dictionary of pages. Each page has a unique
         ID (usually the relative file path without extension) and is a
-        dictionary. The rendered HTML of each page is added to ``page["html"]``
-        **in place**..
+        dictionary. The rendered output of each page is added to
+        ``page["output"]`` **in place**..
     config : dict
         Parameters read from the main configuration file.
     build: dict
@@ -144,10 +163,15 @@ def render(site, config, build, console=None, style=""):
         console.print(f"   {page['source']}")
         page["markdown"] = render_markdown(page, config, site, build, jinja_env)
 
-    console.print(":art: Rendering templates for HTML output:", style=style)
+    console.print(":art: Converting Markdown content to HTML:", style=style)
+    for page in site.values():
+        console.print(f"   {page['source']}")
+        page["body"] = markdown_to_html(page)
+
+    console.print(":art: Rendering templates for final outputs:", style=style)
     for page in site.values():
         console.print(f"   {page['path']} ← {page['template']}")
-        page["html"] = render_html(page, config, site, build, jinja_env)
+        page["output"] = render_output(page, config, site, build, jinja_env)
 
 
 def export(site, files_to_copy, output_dir, console=None, style=""):
@@ -194,7 +218,7 @@ def export(site, files_to_copy, output_dir, console=None, style=""):
         destination = output_dir / Path(page["path"])
         console.print(f"   {str(destination)} ⇒  id: {page['id']}")
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(page["html"], encoding="utf-8")
+        destination.write_text(page["output"], encoding="utf-8")
 
     console.print(":bar_chart: Writing Jupyter Notebook image files:", style=style)
     pages_with_images = [
