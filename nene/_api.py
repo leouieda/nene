@@ -282,7 +282,8 @@ def serve(config, source_files, port=None, console=None, style=""):
 
     def rebuild():
         """Rebuild the website."""
-        site, source_files, config = build(config_file)
+        site, source_files, config, build_info = build(config_file)
+        render(site, config, build_info)
         export(site, source_files["copy"], config["output_dir"])
 
     console.print(":eyes: Watching these source files for changes:", style=style)
