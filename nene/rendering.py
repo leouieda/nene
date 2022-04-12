@@ -70,9 +70,7 @@ def render_markdown(page, config, site, build, jinja_env):
     markdown : str
         The rendered Markdown content for the page.
     """
-    # Jinja doesn't allow \ as paths even on Windows
-    # https://github.com/pallets/jinja/issues/711
-    template = jinja_env.get_template(str(page["source"]).replace("\\", "/"))
+    template = jinja_env.from_string(page["markdown"])
     markdown = template.render(page=page, config=config, site=site, build=build)
     return markdown
 
