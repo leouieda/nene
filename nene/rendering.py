@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: MIT
 """Render outputs with Jinja templates."""
 import jinja2
-import myst_parser.main
+import mdit_py_plugins.anchors
+import mdit_py_plugins.footnote
+from markdown_it import MarkdownIt
 
 
 def make_jinja_env(templates_dir):
@@ -43,8 +45,27 @@ def markdown_to_html(page):
         The converted HTML.
 
     """
-    html = myst_parser.main.to_html(page["markdown"])
+    parser = MarkdownIt("commonmark", {"typographer": True})
+    parser.enable(["replacements", "smartquotes"])
+    parser.enable("table")
+    parser.use(mdit_py_plugins.anchors.anchors_plugin)
+    parser.use(mdit_py_plugins.footnote.footnote_plugin)
+    # Remove the starting hr from the footnote block. It's ugly and should be
+    # handled through CSS by putting a top border on section element.
+    parser.add_render_rule("footnote_block_open", _render_footnote_block_open)
+    html = parser.render(page["markdown"])
     return html
+
+
+def _render_footnote_block_open(self, tokens, idx, options, env):
+    """Render the footnote opening without the hr tag at the start."""
+    html = mdit_py_plugins.footnote.index.render_footnote_block_open(
+        self, tokens, idx, options, env
+    )
+    lines = html.split("\n")
+    if lines[0].strip().startswith("<hr"):
+        lines = lines[1:]
+    return "\n".join(lines)
 
 
 def render_markdown(page, config, site, build, jinja_env):
