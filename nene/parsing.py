@@ -86,7 +86,7 @@ def load_data(path):
     identifier = generate_identifier(path)
     data = {
         "id": identifier,
-        "type": "json",
+        "type": "data",
         "parent": str(path.parent),
         "source": str(path),
         "content": _read_data_file(path),

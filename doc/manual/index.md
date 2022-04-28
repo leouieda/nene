@@ -2,6 +2,8 @@
 title: User manual
 ---
 
+{% from "utils.html" import page_link %}
+
 <div class="callout">
 
 <i class="fa fa-paint-roller fa-lg me-2" aria-hidden="true"></i>
@@ -20,22 +22,7 @@ There are also these examples of websites built with Nēnē:
 
 </div>
 
-## Command line usage
+## Contents
 
-Build a website from sources in the current directory:
-
-```bash
-nene
-```
-
-To serve the website locally for development:
-
-```bash
-nene --serve
-```
-
-Print a help message with all available options:
-
-```bash
-nene --help
-```
+1. {{ page_link("manual/cli", site) }}
+1. {{ page_link("manual/notebooks", site) }}
