@@ -96,11 +96,16 @@ def build(config_file, console=None, style=""):
         for path in sorted(data_files):
             console.print(f"   {str(path)}")
             data = load_data(path)
-            for page in site.values():
-                if page["parent"] == data["parent"]:
-                    console.print(f"     ↳ {page['id']}")
-                    # Merge the two data dictionaries with 'page' taking precedence
-                    page.update({**data["content"], **page})
+            if data["id"] in site:
+                propagate_to_page = [site[data["id"]]]
+            else:
+                propagate_to_page = [
+                    page for page in site.values() if page["parent"] == data["parent"]
+                ]
+            for page in propagate_to_page:
+                console.print(f"     ↳ {page['id']}")
+                # Merge the two data dictionaries with 'page' taking precedence
+                page.update({**data["content"], **page})
     else:
         console.print("   None found.")
 
