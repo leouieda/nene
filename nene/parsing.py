@@ -2,19 +2,17 @@
 # Distributed under the terms of the MIT License.
 # SPDX-License-Identifier: MIT
 """Load data from source files."""
+import base64
 import json
+import textwrap
 from pathlib import Path
 
 import yaml
 
 # For Jupyter notebook support
 try:
-    import nbconvert
     import nbformat
-    import traitlets.config
 except ImportError:
-    traitlets = None
-    nbconvert = None
     nbformat = None
 
 from .utils import generate_identifier
@@ -137,8 +135,8 @@ def load_jupyter_notebook(path):
     page : dict
         Dictionary with notebook content converted to HTML.
     """
-    if nbconvert is None or nbformat is None:
-        raise ValueError("Need nbconvert and nbformat to read Jupyter notebook files.")
+    if nbformat is None:
+        raise ValueError("Need nbformat to read Jupyter notebook files.")
     identifier = generate_identifier(path)
     page = {
         "id": identifier,
@@ -147,14 +145,68 @@ def load_jupyter_notebook(path):
         "path": str(path.with_suffix(".html")),
         "source": str(path),
     }
-    notebook = nbformat.reads(path.read_text(encoding="utf-8"), as_version=4)
     image_dir = str(path.stem) + "_images"
-    nbconfig = traitlets.config.Config()
-    nbconfig.ExtractOutputPreprocessor.output_filename_template = str(
-        Path(image_dir) / "{unique_key}_{cell_index}_{index}{extension}"
-    )
-    exporter = nbconvert.MarkdownExporter(config=nbconfig)
-    markdown, resources = exporter.from_notebook_node(notebook)
-    page["markdown"] = markdown
-    page["images"] = resources["outputs"]
+    image_path_template = str(Path(image_dir) / "cell{cell_index}_image.{extension}")
+    images = {}
+    text_html_template = '<div class="cell_output text_html">\n{html}\n</div>'
+    notebook = nbformat.reads(path.read_text(encoding="utf-8"), as_version=4)
+    language = "python"
+    # Build the Markdown source from the notebook cells
+    markdown = []
+    for cell_index, cell in enumerate(notebook.cells):
+        # Skip empty cells
+        if len(cell["source"].strip()) == 0:
+            continue
+        # Skip cells tagged for skipping
+        if "skip" in cell.metadata.get("tags", []):
+            continue
+        if cell["cell_type"] in ["markdown", "raw"]:
+            markdown.append(cell["source"])
+        elif cell["cell_type"] == "code":
+            markdown.append(f"```{language}\n{cell['source']}\n```")
+            output_pre = []
+            output_display = None
+            for output in cell["outputs"]:
+                if output["output_type"] == "stream":
+                    output_pre.append(output["text"])
+                elif output["output_type"] == "error":
+                    output_pre.append(f"{output['ename']}: {output['evalue']}")
+                    traceback = "\n".join(output["traceback"])
+                    output_pre.append(f"Traceback:\n{traceback}")
+                elif output["output_type"] in ["display_data", "execute_result"]:
+                    if "text/html" in output["data"]:
+                        html = output["data"]["text/html"]
+                        if "<style>" in html:
+                            start = html.find("<style>")
+                            end = html.find("</style>") + 8
+                            css = textwrap.dedent(html[start:end]).replace("\n", " ")
+                            html = html[:start] + css + html[end:]
+                        output_display = text_html_template.format(html=html)
+                    elif "text/plain" in output["data"]:
+                        output_pre.append(output["data"]["text/plain"])
+                    if output_display is None:
+                        for mime_type in output["data"]:
+                            main_type, sub_type = mime_type.split("/")
+                            if main_type == "image":
+                                image_data = base64.b64decode(
+                                    output["data"][mime_type].split("base64,")[-1]
+                                )
+                                image_path = image_path_template.format(
+                                    cell_index=cell_index, extension=sub_type
+                                )
+                                images[image_path] = image_data
+                                caption = "Output of the code shown above."
+                                output_display = f"![{caption}]({image_path})"
+                                break
+                else:
+                    pass
+            if output_pre:
+                output_pre = "\n".join(output_pre)
+                markdown.append(f"```\n{output_pre}\n```")
+            if output_display is not None:
+                markdown.append(output_display)
+        else:
+            pass
+    page["markdown"] = "\n\n".join(markdown)
+    page["images"] = images
     return page
