@@ -4,6 +4,7 @@
 """Load data from source files."""
 import json
 from pathlib import Path
+
 import yaml
 
 # For Jupyter notebook support
