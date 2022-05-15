@@ -91,7 +91,7 @@ def build(config_file, console=None, style=""):
     console.print(
         ":open_book: Reading data files and propagating to pages:", style=style
     )
-    data_files = source_files["json"] + source_files["yaml"]
+    data_files = source_files["json"] + source_files["yaml"] + source_files["bibtex"]
     if data_files:
         for path in sorted(data_files):
             console.print(f"   {str(path)}")

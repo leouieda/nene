@@ -4,7 +4,6 @@
 """Load data from source files."""
 import json
 from pathlib import Path
-
 import yaml
 
 # For Jupyter notebook support
@@ -17,12 +16,21 @@ except ImportError:
     nbconvert = None
     nbformat = None
 
+# For bibtex support
+try: 
+    import bibtexparser
+    from bibtexparser.bparser import BibTexParser
+    from bibtexparser.customization import convert_to_unicode
+
+except ImportError:
+    bibtexparser = None
+
 from .utils import generate_identifier
 
 
 def _read_data_file(path):
     """
-    Read the contents of a data file in JSON or YAML format.
+    Read the contents of a data file in JSON, YAML or BibTeX format.
 
     Parameters
     ----------
@@ -39,6 +47,27 @@ def _read_data_file(path):
     loader = {".yml": yaml.safe_load, ".yaml": yaml.safe_load, ".json": json.loads}
     data = loader[suffix](path.read_text(encoding="utf-8"))
     return data
+
+
+def load_bibtex(path):
+    """
+    Read bibtex entries from path.
+
+    Parameters
+    ----------
+    path : :class:`pathlib.Path`
+        The path of the bibtex file.
+
+    Returns
+    -------
+    data : dict
+        The publication entries of the bibfile as a dictionary.
+    """
+    parser = BibTexParser()
+    parser.customization = convert_to_unicode
+    with open(path) as bibtex_file:
+        bibtex_database = bibtexparser.load(bibtex_file, parser=parser)
+    return bibtex_database.entries
 
 
 def load_config(fname):
@@ -84,12 +113,16 @@ def load_data(path):
         Dictionary with the file ID in ``"id"`` and the data in ``"content"``.
     """
     identifier = generate_identifier(path)
+    if bibtexparser is not None and path.suffix == ".bib":
+        content = {"bibtex_" + path.stem: load_bibtex(path)}
+    else:
+        content = _read_data_file(path)
     data = {
         "id": identifier,
         "type": "data",
         "parent": str(path.parent),
         "source": str(path),
-        "content": _read_data_file(path),
+        "content": content,
     }
     return data
 

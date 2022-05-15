@@ -58,6 +58,7 @@ def crawl(root, ignore, copy_extra):
         ".yml": "yaml",
         ".yaml": "yaml",
         ".ipynb": "ipynb",
+        ".bib": "bibtex",
     }
     tree = {
         "copy": [Path(path) for path in copy_extra],
@@ -65,6 +66,7 @@ def crawl(root, ignore, copy_extra):
         "ipynb": [],
         "json": [],
         "yaml": [],
+        "bibtex": [],
     }
     expanded_ignore = []
     for path in ignore:
