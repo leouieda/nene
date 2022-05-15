@@ -17,7 +17,7 @@ except ImportError:
     nbformat = None
 
 # For bibtex support
-try: 
+try:
     import bibtexparser
     from bibtexparser.bparser import BibTexParser
     from bibtexparser.customization import convert_to_unicode
