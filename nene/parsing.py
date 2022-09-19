@@ -147,7 +147,6 @@ def load_markdown(path):
         "id": identifier,
         "type": "markdown",
         "parent": str(path.parent),
-        "path": str(path.with_suffix(".html")),
         "source": str(path),
     }
     text = path.read_text(encoding="utf-8").strip()
@@ -178,7 +177,6 @@ def load_jupyter_notebook(path):
         "id": identifier,
         "type": "ipynb",
         "parent": str(path.parent),
-        "path": str(path.with_suffix(".html")),
         "source": str(path),
     }
     notebook = nbformat.reads(path.read_text(encoding="utf-8"), as_version=4)
