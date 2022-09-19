@@ -96,7 +96,7 @@ def build(config_file, console=None, style=""):
         for path in sorted(data_files):
             console.print(f"   {str(path)}")
             data = load_data(path)
-            if data["id"] in site:
+            if data["id"] in site and not data["id"].endswith("/index"):
                 propagate_to_page = [site[data["id"]]]
             else:
                 propagate_to_page = [
@@ -104,8 +104,11 @@ def build(config_file, console=None, style=""):
                 ]
             for page in propagate_to_page:
                 console.print(f"     ↳ {page['id']}")
-                # Merge the two data dictionaries with 'page' taking precedence
-                page.update({**data["content"], **page})
+                if data["id"].endswith("/index") or page["id"] == data["id"]:
+                    # Merge the two data dictionaries with 'page' taking precedence
+                    page.update({**data["content"], **page})
+                else:
+                    page[data["id"].split("/")[-1]] = data["content"]
     else:
         console.print("   None found.")
 
