@@ -112,6 +112,15 @@ def build(config_file, console=None, style=""):
     else:
         console.print("   None found.")
 
+    console.print(":dart: Determining destination path for pages:", style=style)
+    for page in site.values():
+        if "save_as" in page:
+            destination = Path(page["source"]).with_name(page["save_as"])
+        else:
+            destination = Path(page["source"]).with_suffix(".html")
+        page["path"] = str(destination)
+        console.print(f"   {page['id']} ⇒ {page['path']}")
+
     def get_parent(item):
         """Return the name of the parent of a page for the groupby."""
         page = item[1]
@@ -173,8 +182,9 @@ def render(site, config, build, console=None, style=""):
 
     console.print(":art: Converting Markdown content to HTML:", style=style)
     for page in site.values():
-        console.print(f"   {page['source']}")
-        page["body"] = markdown_to_html(page)
+        if "markdown" in page:
+            console.print(f"   {page['source']}")
+            page["body"] = markdown_to_html(page)
 
     console.print(":art: Rendering templates for final outputs:", style=style)
     for page in site.values():
