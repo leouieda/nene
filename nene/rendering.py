@@ -2,15 +2,17 @@
 # Distributed under the terms of the MIT License.
 # SPDX-License-Identifier: MIT
 """Render outputs with Jinja templates."""
+from pathlib import Path
+
 import jinja2
 import mdit_py_plugins.anchors
 import mdit_py_plugins.footnote
 from markdown_it import MarkdownIt
 
 
-def make_jinja_env(templates_dir):
+def make_jinja_envs(templates_dir):
     """
-    Create the default Jinja environment given the template folder.
+    Create the default Jinja environments given the template folder.
 
     Parameters
     ----------
@@ -19,15 +21,40 @@ def make_jinja_env(templates_dir):
 
     Returns
     -------
-    env : jinja2.Environment
-        The environment used to render the templates.
+    envs : dict
+        The keys are the file types supported as templates and values are the
+        corresponding environments used to render the templates for those file
+        types.
     """
-    # Need to add the current dir so we can use the Markdown files as templates
-    env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader([str(templates_dir), "."], followlinks=True),
-        extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"],
-    )
-    return env
+    envs = {
+        "markdown": jinja2.Environment(
+            loader=jinja2.FileSystemLoader([str(templates_dir)], followlinks=True),
+            extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"],
+        ),
+        "html": jinja2.Environment(
+            loader=jinja2.FileSystemLoader([str(templates_dir)], followlinks=True),
+            extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"],
+        ),
+        "latex": jinja2.Environment(
+            loader=jinja2.FileSystemLoader([str(templates_dir)], followlinks=True),
+            extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"],
+            # Define custom syntax that is compatible with LaTeX
+            # Based on jtex by curvenote (MIT license):
+            # https://github.com/curvenote/jtex/blob/2778c9fc51cd2cbbe8d4b7deedd637e9dd59f662/jtex/TemplateRenderer.py#L36
+            block_start_string=r"[#",
+            block_end_string="#]",
+            variable_start_string=r"[-",
+            variable_end_string="-]",
+            line_comment_prefix=r"%%",
+            comment_start_string=r"%#",
+            comment_end_string="#%",
+            trim_blocks=True,
+            autoescape=False,
+            auto_reload=True,
+            keep_trailing_newline=True,
+        ),
+    }
+    return envs
 
 
 def markdown_to_html(page):
@@ -68,7 +95,7 @@ def _render_footnote_block_open(self, tokens, idx, options, env):
     return "\n".join(lines)
 
 
-def render_markdown(page, config, site, build, jinja_env):
+def render_markdown(page, config, site, build, jinja_envs):
     """
     Render the templates in Markdown content of the page.
 
@@ -83,20 +110,20 @@ def render_markdown(page, config, site, build, jinja_env):
         Dictionary with the entire site content so far.
     build : dict
         Dictionary with information about the build environment.
-    jinja_env
-        A Jinja2 environment for loading templates.
+    jinja_envs
+        A dictionary of Jinja2 environments for loading templates.
 
     Returns
     -------
     markdown : str
         The rendered Markdown content for the page.
     """
-    template = jinja_env.from_string(page["markdown"])
+    template = jinja_envs["markdown"].from_string(page["markdown"])
     markdown = template.render(page=page, config=config, site=site, build=build)
     return markdown
 
 
-def render_output(page, config, site, build, jinja_env):
+def render_output(page, config, site, build, jinja_envs):
     """
     Render the full template output for a page.
 
@@ -112,8 +139,8 @@ def render_output(page, config, site, build, jinja_env):
         Dictionary with the entire site content so far.
     build : dict
         Dictionary with information about the build environment.
-    jinja_env
-        A Jinja2 environment for loading templates.
+    jinja_envs
+        A dictionary of Jinja2 environments for loading templates.
 
     Returns
     -------
@@ -121,6 +148,8 @@ def render_output(page, config, site, build, jinja_env):
         The converted HTML.
 
     """
-    template = jinja_env.get_template(page["template"])
+    types = {".html": "html", ".tex": "latex"}
+    template_type = types[Path(page["template"]).suffix]
+    template = jinja_envs[template_type].get_template(page["template"])
     html = template.render(page=page, config=config, site=site, build=build)
     return html
