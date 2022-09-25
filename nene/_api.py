@@ -12,7 +12,7 @@ import livereload
 from .crawling import crawl
 from .parsing import load_config, load_data, load_jupyter_notebook, load_markdown
 from .printing import make_console, print_dict, print_file_stats
-from .rendering import make_jinja_env, markdown_to_html, render_markdown, render_output
+from .rendering import make_jinja_envs, markdown_to_html, render_markdown, render_output
 from .utils import capture_build_info
 
 
@@ -173,12 +173,12 @@ def render(site, config, build, console=None, style=""):
     if console is None:
         console, style = make_console(verbose=False)
 
-    jinja_env = make_jinja_env(config["templates_dir"])
+    jinja_envs = make_jinja_envs(config["templates_dir"])
 
     console.print(":art: Rendering templates in Markdown content:", style=style)
     for page in site.values():
         console.print(f"   {page['source']}")
-        page["markdown"] = render_markdown(page, config, site, build, jinja_env)
+        page["markdown"] = render_markdown(page, config, site, build, jinja_envs)
 
     console.print(":art: Converting Markdown content to HTML:", style=style)
     for page in site.values():
@@ -189,7 +189,7 @@ def render(site, config, build, console=None, style=""):
     console.print(":art: Rendering templates for final outputs:", style=style)
     for page in site.values():
         console.print(f"   {page['path']} ← {page['template']}")
-        page["output"] = render_output(page, config, site, build, jinja_env)
+        page["output"] = render_output(page, config, site, build, jinja_envs)
 
 
 def export(site, files_to_copy, output_dir, console=None, style=""):
