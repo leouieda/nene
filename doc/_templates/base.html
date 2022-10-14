@@ -8,7 +8,7 @@
     {% set class = class + " active" %}
     {% set aria = 'aria-current="page"' %}
   {% endif %}
-  <a class="{{ class }}" {{ aria }} href="/{{ site[id].path|replace('index.html', '') }}">{{ name }}</a>
+  <a class="{{ class }}" {{ aria }} href="{{ site[id].path|relative_to(page.path) }}">{{ name }}</a>
 {%- endmacro %}
 
 <head>
@@ -49,11 +49,11 @@
   <meta property="og:site_name" content="{{ config.site_name }}" />
 
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="/css/bootstrap-5.1/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ "css/bootstrap-5.1/bootstrap.min.css"|relative_to(page.path) }}">
   <!-- FontAwsome icons -->
-  <link rel="stylesheet" href="/css/fontawesome/css/all.css">
+  <link rel="stylesheet" href="{{ "css/fontawesome/css/all.css"|relative_to(page.path) }}">
   <!-- Main CSS stylesheet -->
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="{{ "css/style.css"|relative_to(page.path) }}">
 
   <!-- Plausible analytics for anonymous usage statistics -->
   <script defer data-domain="nene.leouieda.com" src="https://plausible.io/js/plausible.js"></script>
@@ -65,8 +65,8 @@
   <header class="shadow-sm">
     <nav class="navbar navbar-expand-lg navbar-light" aria-labelledby="primary-navigation">
       <div class="container align-middle">
-        <a class="navbar-brand" href="/">
-          <img aria-hidden="true" alt="Project logo" src="/{{ config.logo }}">
+        <a class="navbar-brand" href="{{ "index.html"|relative_to(page.path) }}">
+          <img aria-hidden="true" alt="Project logo" src="{{ config.logo|relative_to(page.path) }}">
           {{ config.site_name }}
         </a>
         <button class="navbar-toggler" type="button"
@@ -121,7 +121,7 @@
   </footer>
 
   <!-- Bootstrap bundled Javascript (with their dependencies) -->
-  <script src="/js/bootstrap-5.1/bootstrap.bundle.min.js"
+  <script src="{{ "js/bootstrap-5.1/bootstrap.bundle.min.js"|relative_to(page.path) }}"
     integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
     crossorigin="anonymous"></script>
 

@@ -2,12 +2,34 @@
 # Distributed under the terms of the MIT License.
 # SPDX-License-Identifier: MIT
 """Render outputs with Jinja templates."""
+import os
 from pathlib import Path
 
 import jinja2
 import mdit_py_plugins.anchors
 import mdit_py_plugins.footnote
 from markdown_it import MarkdownIt
+
+
+def filter_relative_to(path, start):
+    """
+    Return the relative path from 'start' to 'path'.
+
+    Use as a custom Jinja filter.
+
+    Parameters
+    ----------
+    path : str
+        The path that should be converted to relative.
+    start : str
+        The path to which the output is relative.
+
+    Returns
+    -------
+    relative : str
+        Relative path from 'start' to 'path'.
+    """
+    return os.path.relpath(path, start=Path(start).parent)
 
 
 def make_jinja_envs(templates_dir):
@@ -54,6 +76,8 @@ def make_jinja_envs(templates_dir):
             keep_trailing_newline=True,
         ),
     }
+    for kind in envs:
+        envs[kind].filters["relative_to"] = filter_relative_to
     return envs
 
 

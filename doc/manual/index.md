@@ -24,5 +24,5 @@ There are also these examples of websites built with Nēnē:
 
 ## Contents
 
-1. {{ page_link("manual/cli", site) }}
-1. {{ page_link("manual/notebooks", site) }}
+1. {{ page_link("manual/cli", site, page) }}
+1. {{ page_link("manual/notebooks", site, page) }}
