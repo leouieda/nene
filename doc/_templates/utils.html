@@ -1,7 +1,7 @@
 {# Define some macros to automate things #}
 
-{%- macro page_link(id, site) -%}
-{# Create a link to a page with the text being its title #}
-  {%- set page = site[id] -%}
-  <a href="/{{ page.path }}">{{ page.title }}</a>
+{%- macro page_link(id, site, page) -%}
+{# Create a relative link to a page with the text being its title #}
+  {%- set target = site[id] -%}
+  <a href="{{ target.path|relative_to(page.path) }}">{{ target.title }}</a>
 {%- endmacro -%}
