@@ -115,7 +115,7 @@ def load_data(path):
     """
     identifier = generate_identifier(path)
     if bibtexparser is not None and path.suffix == ".bib":
-        content = {"bibtex_" + path.stem: load_bibtex(path)}
+        content = load_bibtex(path)
     else:
         content = _read_data_file(path)
     data = {
