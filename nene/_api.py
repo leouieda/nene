@@ -116,6 +116,8 @@ def build(config_file, console=None, style=""):
     for page in site.values():
         if "save_as" in page:
             destination = Path(page["source"]).with_name(page["save_as"])
+        elif config["link_style"] == "pretty" and not page["source"].endswith("index.md"):
+            destination = Path(page["id"]) / "index.html"
         else:
             destination = Path(page["source"]).with_suffix(".html")
         page["path"] = str(destination)
