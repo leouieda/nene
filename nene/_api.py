@@ -112,14 +112,18 @@ def build(config_file, console=None, style=""):
     else:
         console.print("   None found.")
 
+    def pretty_links(source, config):
+        """Whether or not this page link should be prettyfied."""
+        activated = "pretty_links" in config and config["pretty_links"]
+        valid_page = not source.endswith("index.md") and source != "404.md"
+        return activated and valid_page
+
     console.print(":dart: Determining destination path for pages:", style=style)
     for page in site.values():
         if "save_as" in page:
             destination = Path(page["source"]).with_name(page["save_as"])
-        elif "link_style" in config and not page["source"].endswith("index.md") \
-            and not page["source"] == "404.md":
-                if config["link_style"] == "pretty":
-                    destination = Path(page["id"]) / "index.html"
+        elif pretty_links(page["source"], config):
+            destination = Path(page["id"]) / "index.html"
         else:
             destination = Path(page["source"]).with_suffix(".html")
         page["path"] = str(destination)
@@ -252,7 +256,7 @@ def export(site, files_to_copy, output_dir, console=None, style=""):
         for page in pages_with_images:
             console.print(f"   {page['source']}")
             for image_path, image in page["images"].items():
-                path = output_dir / Path(page["parent"]) / Path(image_path)
+                path = output_dir / Path(page["path"]).parent / Path(image_path)
                 console.print(f"     ↳ {str(path)}")
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(image)
