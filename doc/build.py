@@ -2,14 +2,20 @@
 # Distributed under the terms of the MIT License.
 # SPDX-License-Identifier: MIT
 """Trying out the API to build the site with a script instead of the CLI."""
+import functools
 import sys
 
+from PIL import Image, ImageDraw, ImageFont
 import nene
 
-if __name__ == "__main__":
+
+def build(config_file, verbose=True):
+    """
+    Build the website from the sources
+    """
     # Create a Rich Console for printing status updates. To omit the messages,
     # don't pass the console and style to the functions below.
-    console, style = nene.printing.make_console(verbose=True)
+    console, style = nene.printing.make_console(verbose=verbose)
     # So we know that we're using this script and not the "nene" app.
     console.rule()
     console.print(":snake: Building from the 'build.py' Python script.", style=style)
@@ -17,7 +23,7 @@ if __name__ == "__main__":
 
     # Generate the website structure based on the YAML configuration file.
     site, source_files, config, build = nene.build(
-        "config.yml", console=console, style=style
+        config_file, console=console, style=style
     )
     # Render the HTML for the website.
     nene.render(site, config, build, console=console, style=style)
@@ -26,7 +32,19 @@ if __name__ == "__main__":
     nene.export(
         site, source_files["copy"], config["output_dir"], console=console, style=style
     )
+    return config, source_files
+
+
+if __name__ == "__main__":
+    config, source_files = build("config.yml", verbose=True)
+    console, style = nene.printing.make_console(verbose=True)
     # If the script is called with the "-s" command line option, serve the
     # website and open it in a browser.
     if "-s" in sys.argv:
-        nene.serve(config, source_files, console=console, style=style)
+        nene.serve(
+            config,
+            source_files,
+            console=console,
+            style=style,
+            rebuild=functools.partial(build, verbose=False),
+        )
