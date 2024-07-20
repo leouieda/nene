@@ -31,9 +31,8 @@ documentation website (built with Nēnē, of course):
 Looking for an example? Checkout these websites built with Nēnē:
 
 * https://www.compgeolab.org ([source code](https://github.com/compgeolab/website))
-* https://www.acarolcolombo.com ([source code](https://github.com/acarolcolombo/website))
-* https://aguspesce.github.io/garabatos ([source code](https://github.com/aguspesce/garabatos))
 * https://www.leouieda.com ([source code](https://github.com/leouieda/website))
+* https://www.acarolcolombo.com ([source code](https://github.com/acarolcolombo/website))
 
 **WARNING**: You probably want to pin Nēnē to a specific version since I will
 likely break compatibility between releases.
