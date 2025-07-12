@@ -89,8 +89,9 @@ def make_markdown_parser():
     """
     Create the Markdown-it-py parser object that can generate HTML.
     """
-    parser = markdown_it.MarkdownIt("commonmark", {"typographer": True,
-                                                   "highlight": _highlight_code})
+    parser = markdown_it.MarkdownIt(
+        "commonmark", {"typographer": True, "highlight": _highlight_code}
+    )
     parser.enable(["replacements", "smartquotes"])
     parser.enable("table")
     parser.use(mdit_py_plugins.anchors.anchors_plugin)
