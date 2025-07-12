@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           # Need to fetch more than the last commit so that setuptools_scm can
           # create the correct version string. If the number of commits since
@@ -42,7 +42,7 @@ jobs:
         run: git fetch origin 'refs/tags/*:refs/tags/*'
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
@@ -76,7 +76,7 @@ jobs:
       - name: Upload archives as artifacts
         # Only if not a pull request
         if: success() && github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: pypi-${{ github.sha }}
           path: dist
@@ -89,7 +89,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           # The GitHub token is preserved by default but this job doesn't need
           # to be able to push to GitHub.
@@ -97,7 +97,7 @@ jobs:
 
       # Fetch the built archives from the "build" job
       - name: Download built archives artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: pypi-${{ github.sha }}
           path: dist
@@ -105,7 +105,7 @@ jobs:
       - name: Publish to Test PyPI
         # Only publish to TestPyPI when a PR is merged (pushed to main)
         if: github.event_name == 'push'
-        uses: pypa/gh-action-pypi-publish@bce3b74dbf8cc32833ffba9d15f83425c1a736e0
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
         with:
           user: __token__
           password: ${{ secrets.TEST_PYPI_TOKEN}}

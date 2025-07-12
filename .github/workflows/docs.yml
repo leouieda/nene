@@ -34,7 +34,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           # Need to fetch more than the last commit so that setuptools-scm can
           # create the correct version string. If the number of commits since
@@ -50,7 +50,7 @@ jobs:
         run: git fetch origin 'refs/tags/*:refs/tags/*'
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON }}
 
@@ -82,7 +82,7 @@ jobs:
       # Store the docs as a build artifact so we can deploy it later
       - name: Upload HTML documentation as an artifact
         if: github.event_name == 'release' || github.event_name == 'push'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: docs-${{ github.sha }}
           path: doc/_build/
@@ -96,11 +96,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # Fetch the built docs from the "build" job
       - name: Download HTML documentation artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: docs-${{ github.sha }}
           path: doc/_build/
