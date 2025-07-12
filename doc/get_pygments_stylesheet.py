@@ -1,6 +1,7 @@
-"""
-Generate a pygments CSS stylesheet.
-"""
+# Copyright (c) 2021 Leonardo Uieda.
+# Distributed under the terms of the MIT License.
+# SPDX-License-Identifier: MIT
+"""Generate a pygments CSS stylesheet."""
 
 import pathlib
 

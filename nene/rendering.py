@@ -88,6 +88,12 @@ def make_jinja_envs(templates_dir):
 def make_markdown_parser():
     """
     Create the Markdown-it-py parser object that can generate HTML.
+
+    Returns
+    -------
+    parser : MarkdownIt
+        A Markdown-it-py parser configured with custom rendering rules and
+        plugins.
     """
     parser = markdown_it.MarkdownIt(
         "commonmark", {"typographer": True, "highlight": _highlight_code}
@@ -127,20 +133,18 @@ def _highlight_code(code, name, attrs):
 
 
 def _render_code(self, tokens, idx, options, env):
-    """Custom rule to highlight the code when rendering it."""
+    """Highlight the code when rendering it."""
     token = tokens[idx]
     info = (
         markdown_it.common.utils.unescapeAll(token.info).strip() if token.info else ""
     )
     langName = info.split(maxsplit=1)[0] if info else ""
-    if options.highlight:
-        return (
-            options.highlight(token.content, langName, "")
-            or f"<pre><code>{markdown_it.common.utils.escapeHtml(token.content)}</code></pre>"
-        )
-    return (
+    code = (
         f"<pre><code>{markdown_it.common.utils.escapeHtml(token.content)}</code></pre>"
     )
+    if options.highlight:
+        return options.highlight(token.content, langName, "") or code
+    return code
 
 
 ########################################################################################
