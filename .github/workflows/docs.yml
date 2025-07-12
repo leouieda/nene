@@ -106,7 +106,7 @@ jobs:
           path: doc/_build/
 
       - name: Checkout the gh-pages branch in a separate folder
-        uses: actions/checkout@09d2acae674a48949e3602304ab46fd20ae0c42f
+        uses: actions/checkout@v4
         with:
           ref: gh-pages
           # Checkout to this folder instead of the current one
