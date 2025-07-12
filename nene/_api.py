@@ -12,7 +12,13 @@ import livereload
 from .crawling import crawl
 from .parsing import load_config, load_data, load_jupyter_notebook, load_markdown
 from .printing import make_console, print_dict, print_file_stats
-from .rendering import make_jinja_envs, markdown_to_html, render_markdown, render_output
+from .rendering import (
+    make_jinja_envs,
+    make_markdown_parser,
+    markdown_to_html,
+    render_markdown,
+    render_output,
+)
 from .utils import capture_build_info
 
 
@@ -188,11 +194,13 @@ def render(site, config, build, console=None, style=""):
         console.print(f"   {page['source']}")
         page["markdown"] = render_markdown(page, config, site, build, jinja_envs)
 
+    parser = make_markdown_parser()
+
     console.print(":art: Converting Markdown content to HTML:", style=style)
     for page in site.values():
         if "markdown" in page:
             console.print(f"   {page['source']}")
-            page["body"] = markdown_to_html(page)
+            page["body"] = markdown_to_html(page, parser)
 
     console.print(":art: Rendering templates for final outputs:", style=style)
     for page in site.values():

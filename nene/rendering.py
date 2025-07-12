@@ -6,9 +6,13 @@ import os
 from pathlib import Path
 
 import jinja2
+import markdown_it
+import markdown_it.common.utils
 import mdit_py_plugins.anchors
 import mdit_py_plugins.footnote
-from markdown_it import MarkdownIt
+import pygments
+import pygments.formatters
+import pygments.lexers
 
 
 def filter_relative_to(path, start):
@@ -81,22 +85,19 @@ def make_jinja_envs(templates_dir):
     return envs
 
 
-def markdown_to_html(page):
+def make_markdown_parser():
     """
-    Convert the Markdown content of a page to HTML.
-
-    Parameters
-    ----------
-    page : dict
-        Dictionary with the parsed YAML front-matter and Markdown body.
+    Create the Markdown-it-py parser object that can generate HTML.
 
     Returns
     -------
-    html : str
-        The converted HTML.
-
+    parser : MarkdownIt
+        A Markdown-it-py parser configured with custom rendering rules and
+        plugins.
     """
-    parser = MarkdownIt("commonmark", {"typographer": True})
+    parser = markdown_it.MarkdownIt(
+        "commonmark", {"typographer": True, "highlight": _highlight_code}
+    )
     parser.enable(["replacements", "smartquotes"])
     parser.enable("table")
     parser.use(mdit_py_plugins.anchors.anchors_plugin)
@@ -104,8 +105,8 @@ def markdown_to_html(page):
     # Remove the starting hr from the footnote block. It's ugly and should be
     # handled through CSS by putting a top border on section element.
     parser.add_render_rule("footnote_block_open", _render_footnote_block_open)
-    html = parser.render(page["markdown"])
-    return html
+    parser.add_render_rule("fence", _render_code)
+    return parser
 
 
 def _render_footnote_block_open(self, tokens, idx, options, env):
@@ -117,6 +118,57 @@ def _render_footnote_block_open(self, tokens, idx, options, env):
     if lines[0].strip().startswith("<hr"):
         lines = lines[1:]
     return "\n".join(lines)
+
+
+# This code is based on code from a comment on a markdown-it-py issue:
+# https://github.com/executablebooks/markdown-it-py/issues/256#issuecomment-2937277893
+########################################################################################
+def _highlight_code(code, name, attrs):
+    """Use pygments to highlight the code."""
+    if name == "":
+        return None
+    lexer = pygments.lexers.get_lexer_by_name(name)
+    formatter = pygments.formatters.HtmlFormatter()
+    return pygments.highlight(code, lexer, formatter)
+
+
+def _render_code(self, tokens, idx, options, env):
+    """Highlight the code when rendering it."""
+    token = tokens[idx]
+    info = (
+        markdown_it.common.utils.unescapeAll(token.info).strip() if token.info else ""
+    )
+    langName = info.split(maxsplit=1)[0] if info else ""
+    code = (
+        f"<pre><code>{markdown_it.common.utils.escapeHtml(token.content)}</code></pre>"
+    )
+    if options.highlight:
+        return options.highlight(token.content, langName, "") or code
+    return code
+
+
+########################################################################################
+
+
+def markdown_to_html(page, parser):
+    """
+    Convert the Markdown content of a page to HTML.
+
+    Parameters
+    ----------
+    page : dict
+        Dictionary with the parsed YAML front-matter and Markdown body.
+    parser : MarkdownIt
+        A Markdown-it-py parser.
+
+    Returns
+    -------
+    html : str
+        The converted HTML.
+
+    """
+    html = parser.render(page["markdown"])
+    return html
 
 
 def render_markdown(page, config, site, build, jinja_envs):

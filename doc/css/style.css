@@ -24,7 +24,6 @@ pre {
     padding: 1rem;
     box-shadow: 0.1rem 0.2rem 0.2rem rgba(0, 0, 0, 0.1);
     font-size: 1rem;
-    background-color: var(--bs-gray-100);
 }
 
 footer {
