@@ -105,7 +105,7 @@ jobs:
       - name: Publish to Test PyPI
         # Only publish to TestPyPI when a PR is merged (pushed to main)
         if: github.event_name == 'push'
-        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e
         with:
           user: __token__
           password: ${{ secrets.TEST_PYPI_TOKEN}}
@@ -117,7 +117,7 @@ jobs:
       - name: Publish to PyPI
         # Only publish to PyPI when a release triggers the build
         if: github.event_name == 'release'
-        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN}}
