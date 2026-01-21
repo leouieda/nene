@@ -2,6 +2,7 @@
 # Distributed under the terms of the MIT License.
 # SPDX-License-Identifier: MIT
 """Public functions used for building and serving the website."""
+import functools
 import itertools
 import logging
 import shutil
@@ -277,7 +278,7 @@ def export(site, files_to_copy, output_dir, console=None, style=""):
     )
 
 
-def serve(config, source_files, port=None, console=None, style=""):
+def serve(config, source_files, port=None, console=None, style="", rebuild=None):
     """
     Serve the output folder with livereload and watch the sources for changes.
 
@@ -298,6 +299,11 @@ def serve(config, source_files, port=None, console=None, style=""):
         printed.
     style : str
         Style string used to format console status messages.
+    rebuild : function or callable
+        A function or other callable that will be used to rebuild the website
+        when changes are detected. The function takes a single argument: the
+        config_file path. Defaults to building using the ``build``, ``render``,
+        and ``export`` functions with no console output.
     """
     # Note: Can't really quite the livereload server since it sets the logging
     # level and handler when "serve" is called. So we can't set it before
@@ -307,18 +313,17 @@ def serve(config, source_files, port=None, console=None, style=""):
         console, style = make_console(verbose=False)
 
     config_file = config["config_file"]
+
+    if rebuild is None:
+        rebuild = _default_rebuild
+    rebuild = functools.partial(rebuild, config_file)
+
     watch = [config_file, config["templates_dir"]]
     for category in source_files:
         watch.extend(source_files[category])
     # Make all paths into strings to avoid "JSON serialization errors" coming
     # from livereload
     watch = sorted([str(fname) for fname in watch])
-
-    def rebuild():
-        """Rebuild the website."""
-        site, source_files, config, build_info = build(config_file)
-        render(site, config, build_info)
-        export(site, source_files["copy"], config["output_dir"])
 
     console.print(":eyes: Watching these source files for changes:", style=style)
     server = livereload.Server()
@@ -353,3 +358,10 @@ def serve(config, source_files, port=None, console=None, style=""):
             # Clear the logger to avoid having livereload duplicate the
             # handlers causing multiple prints of the same log messages.
             livereload_logger.handlers.clear()
+
+
+def _default_rebuild(config_file):
+    """Rebuild the website."""
+    site, source_files, config, build_info = build(config_file)
+    render(site, config, build_info)
+    export(site, source_files["copy"], config["output_dir"])
